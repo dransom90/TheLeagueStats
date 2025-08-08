@@ -146,14 +146,72 @@ export default function TeamLineupViewer() {
     if (!leagueData || !selectedTeamId) return;
 
     const team = leagueData.teams.find((t: Team) => t.name === selectedTeamId);
-    const matchup = leagueData.schedule.find(
-      (m: any) => m.home.teamId === team?.id || m.away.teamId === team?.id
+
+    /*
+    1. Get leagueData.schedule
+    2. Filter schedule for matchups that meet matchupPeriodId === selectedWeek
+    3. Check to see if the away team matches selectedTeamId
+    4. If it doesn't the home team must match
+    5. The correct team will have pointsByScoringPeriod[selectedWeek] defined
+    */
+
+    console.log("Schedule Data:", leagueData.schedule);
+
+    const filteredAwayMatchups = leagueData.schedule.filter(
+      (m: any) => m.away && m.away.teamId === Number(selectedTeamId) //&&
+      //m.away.pointsByScoringPeriod?.[selectedWeek] !== undefined
     );
+
+    console.log("Filtered Away Matchups:", filteredAwayMatchups);
+
+    // const awayMatchups = leagueData.schedule.filter(
+    //   (m: any) => m.away && Object.keys(m.away).length > 0
+    // );
+
+    // const homeMatchups = leagueData.schedule.filter(
+    //   (m: any) => m.home && Object.keys(m.home).length > 0
+    // );
+
+    // const x = awayMatchups.filter(
+    //   (m: any) =>
+    //     m.teamId === selectedTeamId &&
+    //     m.pointsByScoringPeriod?.[selectedWeek] !== undefined
+    // );
+
+    // const y = homeMatchups.filter(
+    //   (m: any) =>
+    //     m.teamId === selectedTeamId &&
+    //     m.pointsByScoringPeriod?.[selectedWeek] !== undefined
+    // );
+
+    // console.log("Away Matchups:", x);
+    // console.log("Home Matchups:", y);
+
+    const matchup = leagueData.schedule.find((m: any) => {
+      if (!m.home || !m.away) return false;
+      const isTeamMatch =
+        m.home.teamId === Number(selectedTeamId) ||
+        m.away.teamId === Number(selectedTeamId);
+
+      const isCorrectWeek = m.matchupPeriodId === Number(selectedWeek);
+
+      return isTeamMatch && isCorrectWeek;
+    });
+
+    if (!matchup) {
+      console.warn("No matchup found for team/week");
+      setActualPoints(0);
+      return;
+    }
+
     const teamIsHome = matchup.home.teamId === Number(selectedTeamId);
+
     const teamScore = teamIsHome
-      ? matchup.home.totalPoints
-      : matchup.away.totalPoints;
-    setActualPoints(teamScore); // <- Store in state to display in UI
+      ? matchup.home.pointsByScoringPeriod?.[selectedWeek]
+      : matchup.away.pointsByScoringPeriod?.[selectedWeek];
+
+    setActualPoints(teamScore);
+    console.log("Actual Points:", teamScore);
     if (!team) {
       setOptimalLineup([]);
       return;
@@ -176,6 +234,7 @@ export default function TeamLineupViewer() {
     setOptimalLineup(lineup);
 
     const optimalPoints = getTotalPoints(lineup);
+
     setOptimalPoints(optimalPoints);
   }, [leagueData, selectedTeamId, selectedWeek]);
 
@@ -337,7 +396,8 @@ export default function TeamLineupViewer() {
           </Label>
           <br />
           <Label className="inline-block w-fit rounded-md px3 py-1 m-2 p-2 text-center text-lg font-medium bg-[#BC4749]">
-            You left {(optimalPoints - actualPoints).toFixed(2)} points on the bench!
+            You left {(optimalPoints - actualPoints).toFixed(2)} points on the
+            bench!
           </Label>
         </div>
       )}
