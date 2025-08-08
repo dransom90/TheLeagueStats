@@ -1,7 +1,7 @@
 
-# 🏈 ESPN Fantasy Football Optimal Lineup Analyzer
+# 🏈 ESPN Fantasy Football Stats Analyzer
 
-A TypeScript + React project for analyzing ESPN Fantasy Football teams, calculating the **optimal lineup** for any week, and comparing it to the **actual points scored**.
+A TypeScript + React project for analyzing ESPN Fantasy Football teams, calculating the **optimal lineup** for any week, and comparing it to the **actual points scored**.  Future features will include luck calcuation, team performance analyzing and weekly awards.
 
 Built with:
 - ⚡ **Vite + React**
@@ -46,7 +46,7 @@ src/
 ### 1️⃣ Clone the Repository
 
 \`\`\`bash
-git clone https://github.com/<your-username>/<your-repo>.git
+git clone https://github.com/dransom90/TheLeagueStats.git
 cd <your-repo>
 \`\`\`
 
