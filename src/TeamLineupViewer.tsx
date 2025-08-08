@@ -9,6 +9,8 @@ import {
   SelectItem,
 } from "../@/components/ui/select";
 import { Label } from "../@/components/ui/label";
+import { getActualTeamPoints, getWeekTotal } from "./lib/utils";
+import type { Entry, LeagueData, Player, Team } from "./lib/LeagueDataTypes";
 
 const LEAGUE_ID = "1525510";
 const SEASON = 2024;
@@ -25,32 +27,6 @@ type PositionId = 1 | 2 | 4 | 6 | 23 | 5 | 16;
 //   16: "D/ST",
 // };
 
-type PlayerStats = {
-  scoringPeriodId: number;
-  statSourceId: number;
-  appliedTotal: number;
-  playerId: number;
-};
-
-type PlayerPoolEntry = {
-  player: {
-    fullName: string;
-    defaultPositionId: PositionId;
-    stats: PlayerStats[];
-  };
-};
-
-type RosterEntry = {
-  playerPoolEntry: PlayerPoolEntry;
-};
-
-type Player = {
-  fullName: string;
-  defaultPositionId: PositionId;
-  totalPoints: number;
-  playerId: number;
-};
-
 const POSITION_NAMES: Record<number, string> = {
   1: "QB",
   2: "RB",
@@ -61,7 +37,7 @@ const POSITION_NAMES: Record<number, string> = {
   23: "FLEX",
 };
 
-const getTruePosition = (player: any): number => {
+const getTruePosition = (player: Player): number => {
   const slots = player.eligibleSlots;
 
   if (slots.includes(23)) {
@@ -77,46 +53,35 @@ const getTruePosition = (player: any): number => {
 };
 
 export default function TeamLineupViewer() {
-  interface Team {
-    id: number;
-    location: string;
-    nickname: string;
-    roster: {
-      entries: {
-        playerPoolEntry: {
-          player: {
-            fullName: string;
-            defaultPositionId: number;
-            playerId: number;
-            stats: {
-              scoringPeriodId: number;
-              statSourceId: number;
-              appliedTotal?: number;
-            }[];
-          };
-        };
-      }[];
-    };
-  }
-
-  interface LeagueData {
-    teams: Team[];
-  }
+  // interface Team {
+  //   id: number;
+  //   location: string;
+  //   nickname: string;
+  //   roster: {
+  //     entries: {
+  //       playerPoolEntry: {
+  //         player: {
+  //           fullName: string;
+  //           defaultPositionId: number;
+  //           playerId: number;
+  //           stats: {
+  //             scoringPeriodId: number;
+  //             statSourceId: number;
+  //             appliedTotal?: number;
+  //           }[];
+  //         };
+  //       };
+  //     }[];
+  //   };
+  // }
 
   const [leagueData, setLeagueData] = useState<LeagueData | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<number>(1); // Default to Week 1
-  const [optimalLineup, setOptimalLineup] = useState<LineupPlayer[]>([]);
+  const [optimalLineup, setOptimalLineup] = useState<Player[]>([]);
   const [actualPoints, setActualPoints] = useState<number>(0);
   const [optimalPoints, setOptimalPoints] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-
-  interface LineupPlayer {
-    fullName: string;
-    defaultPositionId: number;
-    totalPoints: number;
-    playerId: number;
-  }
 
   useEffect(() => {
     const fetchLeagueData = async () => {
@@ -147,69 +112,11 @@ export default function TeamLineupViewer() {
 
     const team = leagueData.teams.find((t: Team) => t.name === selectedTeamId);
 
-    /*
-    1. Get leagueData.schedule
-    2. Filter schedule for matchups that meet matchupPeriodId === selectedWeek
-    3. Check to see if the away team matches selectedTeamId
-    4. If it doesn't the home team must match
-    5. The correct team will have pointsByScoringPeriod[selectedWeek] defined
-    */
-
-    console.log("Schedule Data:", leagueData.schedule);
-
-    const filteredAwayMatchups = leagueData.schedule.filter(
-      (m: any) => m.away && m.away.teamId === Number(selectedTeamId) //&&
-      //m.away.pointsByScoringPeriod?.[selectedWeek] !== undefined
+    const teamScore = getActualTeamPoints(
+      leagueData,
+      team?.id ?? 0,
+      selectedWeek
     );
-
-    console.log("Filtered Away Matchups:", filteredAwayMatchups);
-
-    // const awayMatchups = leagueData.schedule.filter(
-    //   (m: any) => m.away && Object.keys(m.away).length > 0
-    // );
-
-    // const homeMatchups = leagueData.schedule.filter(
-    //   (m: any) => m.home && Object.keys(m.home).length > 0
-    // );
-
-    // const x = awayMatchups.filter(
-    //   (m: any) =>
-    //     m.teamId === selectedTeamId &&
-    //     m.pointsByScoringPeriod?.[selectedWeek] !== undefined
-    // );
-
-    // const y = homeMatchups.filter(
-    //   (m: any) =>
-    //     m.teamId === selectedTeamId &&
-    //     m.pointsByScoringPeriod?.[selectedWeek] !== undefined
-    // );
-
-    // console.log("Away Matchups:", x);
-    // console.log("Home Matchups:", y);
-
-    const matchup = leagueData.schedule.find((m: any) => {
-      if (!m.home || !m.away) return false;
-      const isTeamMatch =
-        m.home.teamId === Number(selectedTeamId) ||
-        m.away.teamId === Number(selectedTeamId);
-
-      const isCorrectWeek = m.matchupPeriodId === Number(selectedWeek);
-
-      return isTeamMatch && isCorrectWeek;
-    });
-
-    if (!matchup) {
-      console.warn("No matchup found for team/week");
-      setActualPoints(0);
-      return;
-    }
-
-    const teamIsHome = matchup.home.teamId === Number(selectedTeamId);
-
-    const teamScore = teamIsHome
-      ? matchup.home.pointsByScoringPeriod?.[selectedWeek]
-      : matchup.away.pointsByScoringPeriod?.[selectedWeek];
-
     setActualPoints(teamScore);
     console.log("Actual Points:", teamScore);
     if (!team) {
@@ -217,29 +124,21 @@ export default function TeamLineupViewer() {
       return;
     }
     const rosterEntries = team?.roster?.entries ?? [];
-    const players: Player[] = (rosterEntries as RosterEntry[]).map((entry) => {
-      const stats = entry.playerPoolEntry.player.stats.find(
-        (s) => s.scoringPeriodId === selectedWeek && s.statSourceId === 0
-      );
-      const truePosition = getTruePosition(entry.playerPoolEntry.player);
-      return {
-        playerId: entry.playerPoolEntry.player.id,
-        fullName: entry.playerPoolEntry.player.fullName,
-        defaultPositionId: truePosition,
-        totalPoints: stats?.appliedTotal ?? 0,
-      };
+    const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
+      const player = entry.playerPoolEntry.player;
+      const truePosition = getTruePosition(player);
+      player.defaultPositionId = truePosition;
+      return player;
     });
 
     const lineup = getOptimalLineup(players);
     setOptimalLineup(lineup);
 
-    const optimalPoints = getTotalPoints(lineup);
+    const optimalPoints = getWeekTotal(lineup, selectedWeek);
+    console.log("Optimal Points:", optimalPoints);
 
     setOptimalPoints(optimalPoints);
   }, [leagueData, selectedTeamId, selectedWeek]);
-
-  const getTotalPoints = (lineup: Player[]): number =>
-    lineup.reduce((sum, player) => sum + (player.totalPoints || 0), 0);
 
   const getOptimalLineup = (players: Player[]): Player[] => {
     const POS_LIMITS: Record<PositionId, number> = {
@@ -261,72 +160,153 @@ export default function TeamLineupViewer() {
     // Get the QBs and add the highest scoring one
     const qbs = copiedPlayers.filter((p) => p.defaultPositionId === 1);
     if (qbs.length > 0) {
-      const bestQB = qbs.reduce((prev, curr) =>
-        prev.totalPoints > curr.totalPoints ? prev : curr
-      );
+      const bestQB = qbs.reduce((prev, curr) => {
+        const prevPoints =
+          prev.stats.find((s) => s.scoringPeriodId === selectedWeek)
+            ?.appliedTotal ?? 0;
+        const currPoints =
+          curr.stats.find((s) => s.scoringPeriodId === selectedWeek)
+            ?.appliedTotal ?? 0;
+
+        return prevPoints > currPoints ? prev : curr;
+      });
       lineup.push(bestQB);
-      usedPlayers.add(bestQB.playerId);
+      usedPlayers.add(bestQB.id);
       counts[0] = (counts[0] || 0) + 1;
-      copiedPlayers = copiedPlayers.filter(
-        (p) => p.playerId !== bestQB.playerId
-      );
+      copiedPlayers = copiedPlayers.filter((p) => p.id !== bestQB.id);
     }
 
     const rbs = copiedPlayers.filter((p) => p.defaultPositionId === 2);
     if (rbs.length > 0) {
-      const sortedRbs = rbs.sort((a, b) => b.totalPoints - a.totalPoints);
+      const sortedRbs = rbs.sort((a, b) => {
+        const aPoints =
+          a.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        const bPoints =
+          b.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        return bPoints - aPoints;
+      });
+      console.log("Sorted RBs:", sortedRbs);
       for (let i = 0; i < Math.min(2, sortedRbs.length); i++) {
         const rb = sortedRbs[i];
         lineup.push(rb);
-        usedPlayers.add(rb.playerId);
+        usedPlayers.add(rb.id);
         counts[2] = (counts[2] || 0) + 1;
-        copiedPlayers = copiedPlayers.filter((p) => p.playerId !== rb.playerId);
+        copiedPlayers = copiedPlayers.filter((p) => p.id !== rb.id);
       }
     }
 
     const wrs = copiedPlayers.filter((p) => p.defaultPositionId === 4);
     if (wrs.length > 0) {
-      const sortedWrs = wrs.sort((a, b) => b.totalPoints - a.totalPoints);
+      const sortedWrs = wrs.sort((a, b) => {
+        const aPoints =
+          a.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        const bPoints =
+          b.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        return bPoints - aPoints;
+      });
       for (let i = 0; i < Math.min(2, sortedWrs.length); i++) {
         const wr = sortedWrs[i];
         lineup.push(wr);
-        usedPlayers.add(wr.playerId);
+        usedPlayers.add(wr.id);
         counts[4] = (counts[4] || 0) + 1;
-        copiedPlayers = copiedPlayers.filter((p) => p.playerId !== wr.playerId);
+        copiedPlayers = copiedPlayers.filter((p) => p.id !== wr.id);
       }
     }
 
     const tes = copiedPlayers.filter((p) => p.defaultPositionId === 6);
     if (tes.length > 0) {
-      const sortedTes = tes.sort((a, b) => b.totalPoints - a.totalPoints);
+      const sortedTes = tes.sort((a, b) => {
+        const aPoints =
+          a.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        const bPoints =
+          b.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        return bPoints - aPoints;
+      });
       const bestTE = sortedTes[0];
       lineup.push(bestTE);
-      usedPlayers.add(bestTE.playerId);
+      usedPlayers.add(bestTE.id);
       counts[6] = (counts[6] || 0) + 1;
-      copiedPlayers = copiedPlayers.filter(
-        (p) => p.playerId !== bestTE.playerId
-      );
+      copiedPlayers = copiedPlayers.filter((p) => p.id !== bestTE.id);
     }
 
     const dsts = copiedPlayers.filter((p) => p.defaultPositionId === 16);
     if (dsts.length > 0) {
-      const bestDST = dsts.reduce((prev, curr) =>
-        prev.totalPoints > curr.totalPoints ? prev : curr
-      );
+      const bestDST = dsts.reduce((prev, curr) => {
+        const prevPoints =
+          prev.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        const currPoints =
+          curr.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        return prevPoints > currPoints ? prev : curr;
+      });
       lineup.push(bestDST);
-      usedPlayers.add(bestDST.playerId);
+      usedPlayers.add(bestDST.id);
       counts[16] = (counts[16] || 0) + 1;
-      copiedPlayers = copiedPlayers.filter(
-        (p) => p.playerId !== bestDST.playerId
-      );
+      copiedPlayers = copiedPlayers.filter((p) => p.id !== bestDST.id);
     }
 
-    const k = copiedPlayers.find((p) => p.defaultPositionId === 5);
-    if (k) {
-      lineup.push(k);
-      usedPlayers.add(k.playerId);
+    const k = copiedPlayers.filter((p) => p.defaultPositionId === 5);
+    if (k.length > 0) {
+      const bestK = k.reduce((prev, curr) => {
+        const prevPoints =
+          prev.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        const currPoints =
+          curr.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        return prevPoints > currPoints ? prev : curr;
+      });
+      lineup.push(bestK);
+      usedPlayers.add(bestK.id);
       counts[17] = (counts[17] || 0) + 1;
-      copiedPlayers = copiedPlayers.filter((p) => p.playerId !== k.playerId);
+      copiedPlayers = copiedPlayers.filter((p) => p.id !== bestK.id);
     }
 
     // Add the highest remaining player to FLEX
@@ -334,14 +314,32 @@ export default function TeamLineupViewer() {
       FLEX_ELIGIBLE.includes(p.defaultPositionId)
     );
     if (flexCandidates.length > 0) {
-      const bestFlex = flexCandidates.reduce((prev, curr) =>
-        prev.totalPoints > curr.totalPoints ? prev : curr
-      );
+      const bestFlex = flexCandidates.reduce((prev, curr) => {
+        const prevPoints =
+          prev.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        const currPoints =
+          curr.stats.find(
+            (s) =>
+              s.scoringPeriodId === selectedWeek &&
+              s.statSourceId === 0 &&
+              s.statSplitTypeId === 1
+          )?.appliedTotal ?? 0;
+        return prevPoints > currPoints ? prev : curr;
+      });
       lineup.push(bestFlex);
-      usedPlayers.add(bestFlex.playerId);
+      usedPlayers.add(bestFlex.id);
       counts[23] = (counts[23] || 0) + 1;
     }
 
+    console.log(
+      "Optimal lineup: ",
+      lineup.map((p) => p.fullName)
+    );
     return lineup;
   };
 
@@ -365,7 +363,7 @@ export default function TeamLineupViewer() {
                     value={String(team.name)}
                     className="text-black text-base focus:bg-gray-100 data-[highlighted]:bg-gray-100 data-[highlighted]:text-black cursor-pointer"
                   >
-                    {team.location} {team.name}
+                    {team.name}
                   </SelectItem>
                 );
               })}
@@ -412,7 +410,13 @@ export default function TeamLineupViewer() {
                   </div>
                   <div>{player.fullName}</div>
                   <div className="text-sm text-muted">
-                    {player.totalPoints} pts
+                    {player.stats.find(
+                      (s) =>
+                        s.scoringPeriodId === selectedWeek &&
+                        s.statSourceId === 0 &&
+                        s.statSplitTypeId === 1
+                    )?.appliedTotal ?? 0}{" "}
+                    pts
                   </div>
                 </CardContent>
               </Card>
