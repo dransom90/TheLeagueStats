@@ -55,13 +55,7 @@ function App() {
             <TeamLineupViewer year={selectedYear} />
           </TabsContent>
           <TabsContent value="Luck">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-4">Luck</h2>
-              <p>
-                This section is under construction. Stay tuned for updates on
-                how luck plays a role in our fantasy league!
-              </p>
-            </div>
+            <Luck selectedYear={selectedYear} />
           </TabsContent>
         </Tabs>
       </main>
