@@ -119,24 +119,40 @@ export default function Luck({ selectedYear }: LuckProps) {
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Luck Analysis</h2>
-      <h3>
-        Deep down we all know that this is a game of luck but how does one
-        quantify "Luck?"
-      </h3>
+      <Accordion type="single" collapsible className="w-full mb-4">
+        <AccordionItem value="what-is-luck">
+          <Card>
+            <AccordionTrigger>
+              <CardHeader>
+                <CardTitle>What is Luck?</CardTitle>
+              </CardHeader>
+            </AccordionTrigger>
+            <AccordionContent>
+              <CardContent>
+                <h3>
+                  Deep down we all know that this is a game of luck but how does
+                  one quantify "Luck?"
+                </h3>
+                <br />
+                <h3>
+                  Luck is hereby defined by how well your team performs compared
+                  to the rest of The League. If your team is the worst, then you
+                  have 0 “Luck” and a complete lack of “Skill.” The highest
+                  scoring team has 0 “Luck” and a lot of “Skill.”
+                </h3>
+                <br />
+                <h3>
+                  If your team scores the second to lowest amount of points but
+                  still wins, you experience a lot of “Good Luck.” If you lost,
+                  you experienced a little bit of “Bad Luck.” Of course, the
+                  opposite is true for the second highest scoring team.
+                </h3>
+              </CardContent>
+            </AccordionContent>
+          </Card>
+        </AccordionItem>
+      </Accordion>
       <br />
-      <h3>
-        Luck is hereby defined by how well your team performs compared to the
-        rest of The League. If your team is the worst, then you have 0 “Luck”
-        and a complete lack of “Skill.” The highest scoring team has 0 “Luck”
-        and a lot of “Skill.”
-      </h3>
-      <br />
-      <h3>
-        If your team scores the second to lowest amount of points but still
-        wins, you experience a lot of “Good Luck.” If you lost, you experienced
-        a little bit of “Bad Luck.” Of course, the opposite is true for the
-        second highest scoring team.
-      </h3>
       <Tabs defaultValue="weekly" className="w-full">
         <TabsList>
           <TabsTrigger value="weekly">Weekly Luck</TabsTrigger>
