@@ -48,7 +48,6 @@ export default function Luck({ selectedYear }: LuckProps) {
         setLoading(true);
         setError(null);
 
-        // Replace this with your API endpoint for ESPN league data
         const res = await fetch(
           `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${selectedYear}/segments/0/leagues/1525510?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId`
         );
