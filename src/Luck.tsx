@@ -21,6 +21,7 @@ import {
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "../@/components/ui/card";
@@ -121,32 +122,75 @@ export default function Luck({ selectedYear }: LuckProps) {
       <h2 className="text-xl font-bold mb-4">Luck Analysis</h2>
       <Accordion type="single" collapsible className="w-full mb-4">
         <AccordionItem value="what-is-luck">
-          <Card>
+          <Card className="w-full focus:outline-none focus:ring-0">
             <AccordionTrigger>
-              <CardHeader>
-                <CardTitle>What is Luck?</CardTitle>
+              <CardHeader className="w-full space-y-1">
+                <CardTitle>
+                  Luck: The Stat That Calls Out Pure Fantasy Fortune
+                </CardTitle>
+                <CardDescription className="w-full text-slate-100 max-w-none">
+                  In fantasy football some wins are earned, others are{" "}
+                  <em>stolen</em> by the fantasy gods. This page keeps receipts.
+                </CardDescription>
               </CardHeader>
             </AccordionTrigger>
             <AccordionContent>
-              <CardContent>
-                <h3>
-                  Deep down we all know that this is a game of luck but how does
-                  one quantify "Luck?"
-                </h3>
-                <br />
-                <h3>
-                  Luck is hereby defined by how well your team performs compared
-                  to the rest of The League. If your team is the worst, then you
-                  have 0 “Luck” and a complete lack of “Skill.” The highest
-                  scoring team has 0 “Luck” and a lot of “Skill.”
-                </h3>
-                <br />
-                <h3>
-                  If your team scores the second to lowest amount of points but
-                  still wins, you experience a lot of “Good Luck.” If you lost,
-                  you experienced a little bit of “Bad Luck.” Of course, the
-                  opposite is true for the second highest scoring team.
-                </h3>
+              <CardContent className="space-y-4">
+                <p className="leading-relaxed text-left">
+                  <strong>“Luck”</strong> measures how much your weekly result
+                  matched up with how well you actually scored compared to the
+                  rest of the league. Win while putting up weak numbers?
+                  Congrats — you just banked
+                  <span className="text-green-600"> Good Luck Points</span>.
+                  Drop 140 and still lose? Sorry — that’s
+                  <span className="text-red-600"> Bad Luck Points</span>.
+                </p>
+
+                <div>
+                  <h2 className="text-base font-semibold mb-2">
+                    How the points work
+                  </h2>
+                  <ul className="list-disc list-outside space-y-1 text-left">
+                    <li>
+                      <strong>Positive Luck Points</strong> — awarded when you{" "}
+                      <em>win</em> despite scoring fewer points than many other
+                      teams that week (you got lucky).
+                    </li>
+                    <li>
+                      <strong>Negative Luck Points</strong> — given when you{" "}
+                      <em>lose</em> despite outscoring many teams that week (you
+                      were unlucky).
+                    </li>
+                    <li>
+                      Rank-based scoring: the farther from the top (for winners)
+                      or the bottom (for losers) your rank is, the bigger the
+                      swing — up to <strong>±10 points</strong> in a single
+                      week.
+                    </li>
+                    <li>
+                      The top-scoring team and the lowest-scoring team both get{" "}
+                      <strong>0 luck</strong> for that week (they either
+                      demonstrated clear skill or were unambiguously worst).
+                    </li>
+                  </ul>
+                </div>
+
+                <p className="text-slate-100">
+                  Check the <strong>Weekly Luck</strong> tab to relive every
+                  theft and injustice. Flip to{" "}
+                  <strong>Season Luck Totals</strong> to see who’s been riding
+                  the horseshoe all year — and who’s been cursed for life.
+                </p>
+
+                <div className="flex items-center gap-2">
+                  <span className="bg-slate-100 rounded-full px-2 py-0.5 text-xs text-slate-800">
+                    Tip
+                  </span>
+                  <small className="text-slate-100">
+                    Use this stat to fuel the trash talk — or to spot which of
+                    your victories were actually miracles.
+                  </small>
+                </div>
               </CardContent>
             </AccordionContent>
           </Card>
@@ -154,9 +198,11 @@ export default function Luck({ selectedYear }: LuckProps) {
       </Accordion>
       <br />
       <Tabs defaultValue="weekly" className="w-full">
-        <TabsList>
+        <TabsList className="mb-4">
           <TabsTrigger value="weekly">Weekly Luck</TabsTrigger>
-          <TabsTrigger value="season">Season Luck</TabsTrigger>
+          <TabsTrigger className="m-4" value="season">
+            Season Luck
+          </TabsTrigger>
         </TabsList>
 
         {/* Weekly Luck Table */}
