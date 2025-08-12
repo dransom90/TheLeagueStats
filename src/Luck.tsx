@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -11,6 +10,7 @@ import {
 import type { LeagueData } from "./lib/LeagueDataTypes";
 import { calculateLuckPoints } from "./Luck/LuckUtils";
 import type { LuckPoints } from "./Luck/LuckTypes";
+import { getWeeksPlayed } from "./lib/utils";
 import { Badge } from "../@/components/ui/badge";
 import {
   Accordion,
@@ -63,9 +63,8 @@ export default function Luck({ selectedYear }: LuckProps) {
         }
 
         const luckData = calculateLuckPoints(leagueData);
-        const weeksPlayed = Math.max(
-          ...leagueData.schedule.map((m) => m.matchupPeriodId)
-        );
+        const weeksPlayed = getWeeksPlayed(leagueData);
+
         setLuckData(luckData);
         setWeeksPlayed(weeksPlayed);
       } catch (err: any) {

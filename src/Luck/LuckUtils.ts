@@ -1,12 +1,5 @@
 /*
     Luck Algorithm
-    1. Fetch the league schedule for the selected year.
-    2. Calculate the luck factor for each team based on the scores and opponents.
-        a. For each week, sort teams by their scores.
-        b. Determine if a team won or lost against their opponent.
-        c. Assign luck points based on their performance relative to the league average.
-    3. Display the teams with their respective luck factors by week and overall.
-
     If a team either scores the highest or lowest points, they have 0 luck.
 
     If a team scores the second highest points and wins, they have 1 luck point.
@@ -14,38 +7,9 @@
     If a team scores the third highest points and wins, they have 2 luck points.
     If a team scores the third lowest points and loses, they have -2 luck points.
     And so on, up to 10 luck points for the second place team and -10 luck points for the second to last place team.
-
-    Winning teams receive the following luck points in the order of their score:
-    - 1st place: 0 luck points
-    - 2nd place: 1 luck point
-    - 3rd place: 2 luck points
-    - 4th place: 3 luck points
-    - 5th place: 4 luck points
-    - 6th place: 5 luck points
-    - 7th place: 6 luck points
-    - 8th place: 7 luck points
-    - 9th place: 8 luck points
-    - 10th place: 9 luck points
-    - 11th place: 10 luck points
-    - 12th place: 0 luck points
-
-    Losing teams receive the following luck points in the order of their score:
-    - 12th place: 0 luck points
-    - 11th place: -1 luck points
-    - 10th place: -2 luck points
-    - 9th place: -3 luck points
-    - 8th place: -4 luck points
-    - 7th place: -5 luck points
-    - 6th place: -6 luck points
-    - 5th place: -7 luck points
-    - 4th place: -8 luck points
-    - 3rd place: -9 luck points
-    - 2nd place: -10 luck points
-    - 1st place: 0 luck points
 */
-
-import type { LeagueData } from "../lib/LeagueDataTypes"; 
-import type { LuckPoints } from "./LuckTypes";
+import type { LeagueData } from "../lib/LeagueDataTypes";
+import { getWeeksPlayed } from "../lib/utils";
 
 export function calculateLuckPoints(leagueData: LeagueData) {
   const teams = leagueData.teams.map((team) => ({
@@ -57,7 +21,7 @@ export function calculateLuckPoints(leagueData: LeagueData) {
 
   const getTeam = (id: number) => teams.find((t) => t.teamId === id);
 
-  const weeks = Math.max(...leagueData.schedule.map((m) => m.matchupPeriodId));
+  const weeks = getWeeksPlayed(leagueData);
 
   for (let week = 1; week <= weeks; week++) {
     const matchups = leagueData.schedule.filter((m) => m.matchupPeriodId === week);

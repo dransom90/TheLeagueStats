@@ -47,3 +47,15 @@ export function getWeekTotal(players: Player[], selectedWeek: number): number {
     return total + (stat?.appliedTotal ?? 0);
   }, 0);
 }
+
+export function getWeeksPlayed(leagueData: LeagueData): number {
+  /*
+    1. Get leagueData.status
+    2. Get status.currentMatchupPeriod
+  */
+  if (!leagueData || !leagueData.status || !leagueData.status.currentMatchupPeriod) {
+    return 0; // No valid league data or current matchup period
+  }
+
+  return leagueData.status.currentMatchupPeriod;
+}
