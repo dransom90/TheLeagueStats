@@ -8,7 +8,7 @@ import {
   SelectItem,
 } from "../@/components/ui/select";
 import { Label } from "../@/components/ui/label";
-import { getActualTeamPoints, getWeekTotal } from "./lib/utils";
+import { getActualTeamPoints, getWeeksPlayed, getWeekTotal } from "./lib/utils";
 import type { Entry, LeagueData, Player, Team } from "./lib/LeagueDataTypes";
 import { getOptimalLineup } from "./lib/OptimalLineupCalculator";
 
@@ -47,6 +47,7 @@ export default function TeamLineupViewer({ year }: { year: number }) {
   const [optimalLineup, setOptimalLineup] = useState<Player[]>([]);
   const [actualPoints, setActualPoints] = useState<number>(0);
   const [optimalPoints, setOptimalPoints] = useState<number>(0);
+  const [weeksPlayed, setWeeksPlayed] = useState<number>(0);
   //const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -63,6 +64,8 @@ export default function TeamLineupViewer({ year }: { year: number }) {
 
         const data = await response.json();
         setLeagueData(data);
+        const weeksPlayed = getWeeksPlayed(data);
+        setWeeksPlayed(weeksPlayed);
       } catch (error) {
         console.error("Error loading league data:", error);
       } finally {
@@ -84,7 +87,6 @@ export default function TeamLineupViewer({ year }: { year: number }) {
       selectedWeek
     );
     setActualPoints(teamScore);
-    console.log("Actual Points:", teamScore);
     if (!team) {
       setOptimalLineup([]);
       return;
@@ -138,7 +140,7 @@ export default function TeamLineupViewer({ year }: { year: number }) {
               <SelectValue placeholder="Select Week" />
             </SelectTrigger>
             <SelectContent className="bg-white text-black dark:text-black border border-gray-300 z-[9999]">
-              {[...Array(18)].map((_, i) => {
+              {Array.from({ length: weeksPlayed }, (_, i) => {
                 const weekNum = i + 1;
                 return (
                   <SelectItem key={weekNum} value={weekNum.toString()}>
