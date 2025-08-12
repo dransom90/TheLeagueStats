@@ -27,6 +27,10 @@ export function getActualTeamPoints(leagueData: LeagueData, teamId: number, sele
     }
 
     const team = matchup.away?.teamId === teamId ? matchup.away : matchup.home;
+     if(!team.pointsByScoringPeriod) {
+      return 0; // No pointsByScoringPeriod data available for the team
+    }
+    
     return team.pointsByScoringPeriod[selectedWeek.toString()] || 0; // Return points for the selected week or 0 if not defined
 }
 
@@ -42,4 +46,16 @@ export function getWeekTotal(players: Player[], selectedWeek: number): number {
     );
     return total + (stat?.appliedTotal ?? 0);
   }, 0);
+}
+
+export function getWeeksPlayed(leagueData: LeagueData): number {
+  /*
+    1. Get leagueData.status
+    2. Get status.currentMatchupPeriod
+  */
+  if (!leagueData || !leagueData.status || !leagueData.status.currentMatchupPeriod) {
+    return 0; // No valid league data or current matchup period
+  }
+
+  return leagueData.status.currentMatchupPeriod;
 }

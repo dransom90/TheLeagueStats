@@ -13,7 +13,6 @@ import type { Entry, LeagueData, Player, Team } from "./lib/LeagueDataTypes";
 import { getOptimalLineup } from "./lib/OptimalLineupCalculator";
 
 const LEAGUE_ID = "1525510";
-const SEASON = 2024;
 const SEGMENT_ID = 0; // Regular season
 
 const POSITION_NAMES: Record<number, string> = {
@@ -41,29 +40,7 @@ const getTruePosition = (player: Player): number => {
   return player.defaultPositionId;
 };
 
-export default function TeamLineupViewer() {
-  // interface Team {
-  //   id: number;
-  //   location: string;
-  //   nickname: string;
-  //   roster: {
-  //     entries: {
-  //       playerPoolEntry: {
-  //         player: {
-  //           fullName: string;
-  //           defaultPositionId: number;
-  //           playerId: number;
-  //           stats: {
-  //             scoringPeriodId: number;
-  //             statSourceId: number;
-  //             appliedTotal?: number;
-  //           }[];
-  //         };
-  //       };
-  //     }[];
-  //   };
-  // }
-
+export default function TeamLineupViewer({ year }: { year: number }) {
   const [leagueData, setLeagueData] = useState<LeagueData | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<number>(1); // Default to Week 1
@@ -77,7 +54,7 @@ export default function TeamLineupViewer() {
       //setLoading(true);
       try {
         const response = await fetch(
-          `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${SEASON}/segments/${SEGMENT_ID}/leagues/${LEAGUE_ID}?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId=${selectedWeek}`
+          `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${year}/segments/${SEGMENT_ID}/leagues/${LEAGUE_ID}?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId=${selectedWeek}`
         );
 
         if (!response.ok) {
