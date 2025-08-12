@@ -37,19 +37,10 @@ interface LuckProps {
 }
 
 export default function Luck({ selectedYear }: LuckProps) {
-  //const [schedule, setSchedule] = useState<Matchup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // const [sortedPoints, setSortedPoints] = useState<
-  //   {
-  //     week: number;
-  //     teams: { teamId: number; name: string; points: number }[];
-  //   }[]
-  // >([]);
-  const [leagueData, setLeagueData] = useState<LeagueData | null>(null);
   const [luckData, setLuckData] = useState<LuckPoints[]>([]);
   const [weeksPlayed, setWeeksPlayed] = useState<number>(0);
-  const [selectedWeek, setSelectedWeek] = useState<number>(1);
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -66,7 +57,6 @@ export default function Luck({ selectedYear }: LuckProps) {
         }
 
         const leagueData: LeagueData = await res.json();
-        setLeagueData(leagueData);
 
         if (!leagueData.schedule) {
           throw new Error("No schedule data found in API response");
@@ -78,9 +68,6 @@ export default function Luck({ selectedYear }: LuckProps) {
         );
         setLuckData(luckData);
         setWeeksPlayed(weeksPlayed);
-
-        //setSchedule(leagueData.schedule);
-        //setSortedPoints(getWeeklyPointsSorted(leagueData));
       } catch (err: any) {
         setError(err.message || "Failed to fetch schedule");
       } finally {
@@ -233,10 +220,18 @@ export default function Luck({ selectedYear }: LuckProps) {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Team</TableHead>
-                          <TableHead>Points</TableHead>
-                          <TableHead>Won</TableHead>
-                          <TableHead>Luck</TableHead>
+                          <TableHead className="text-center px-2 py-1 font-bold">
+                            Team
+                          </TableHead>
+                          <TableHead className="text-center px-2 py-1 font-bold">
+                            Points
+                          </TableHead>
+                          <TableHead className="text-center px-2 py-1 font-bold">
+                            Won
+                          </TableHead>
+                          <TableHead className="text-center px-2 py-1 font-bold">
+                            Luck
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -267,9 +262,15 @@ export default function Luck({ selectedYear }: LuckProps) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Rank</TableHead>
-                    <TableHead className="w-auto">Team</TableHead>
-                    <TableHead>Total Luck</TableHead>
+                    <TableHead className="text-center px-2 py-1 font-bold">
+                      Rank
+                    </TableHead>
+                    <TableHead className="text-center px-2 py-1 font-bold">
+                      Team
+                    </TableHead>
+                    <TableHead className="text-center px-2 py-1 font-bold">
+                      Total Luck
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
