@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import type { LeagueData } from "./lib/LeagueDataTypes";
 import { calculateLuckPoints } from "./Luck/LuckUtils";
 import type { LuckPoints } from "./Luck/LuckTypes";
 import { getWeeksPlayed } from "./lib/utils";
-import { Badge } from "../@/components/ui/badge";
+//import { Badge } from "../@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,

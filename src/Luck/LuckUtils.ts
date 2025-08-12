@@ -42,7 +42,9 @@ export function calculateLuckPoints(leagueData: LeagueData) {
       } else {
         // Bye week — no opponent
         const team = getTeam(m.home.teamId);
-        weekTeams.push({teamName: team.teamName, teamId: m.home.teamId, points: m.home.totalPoints, won: false });
+        if(team){
+          weekTeams.push({teamName: team.teamName, teamId: m.home.teamId, points: m.home.totalPoints, won: false });
+        }
       }
     });
 

@@ -1,7 +1,7 @@
 import "./App.css";
 import TeamLineupViewer from "./TeamLineupViewer";
 import Luck from "./Luck";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Tabs,
   TabsList,
