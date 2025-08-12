@@ -27,6 +27,10 @@ export function getActualTeamPoints(leagueData: LeagueData, teamId: number, sele
     }
 
     const team = matchup.away?.teamId === teamId ? matchup.away : matchup.home;
+     if(!team.pointsByScoringPeriod) {
+      return 0; // No pointsByScoringPeriod data available for the team
+    }
+    
     return team.pointsByScoringPeriod[selectedWeek.toString()] || 0; // Return points for the selected week or 0 if not defined
 }
 
