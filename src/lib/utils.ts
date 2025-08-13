@@ -59,3 +59,18 @@ export function getWeeksPlayed(leagueData: LeagueData): number {
 
   return leagueData.status.currentMatchupPeriod;
 }
+
+export function getTruePosition(player: Player): number {
+  const slots = player.eligibleSlots;
+
+  if (slots.includes(23)) {
+    if (slots.includes(2)) {
+      return 2; // RB
+    }
+    if (slots.includes(4)) {
+      return 4; // WR
+    }
+    return 6; // TE
+  }
+  return player.defaultPositionId;
+}

@@ -1,5 +1,7 @@
-import type { LeagueData } from "../lib/LeagueDataTypes";
+import type { Entry, LeagueData, Player } from "../lib/LeagueDataTypes";
 import type { AwardRecipient } from "./AwardTypes";
+import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
+import { getTruePosition, getWeekTotal } from "../lib/utils";
 
 type WeekTeam = {
   teamName: string;
@@ -102,4 +104,58 @@ export function findSmallestWin(leagueData: LeagueData, week: number): AwardReci
         teamName: lowestWinner.teamName,
         value: lowestWinner.victoryMargin ?? 0,
     }
+}
+
+export function findHighestPotentialTeam(leagueData: LeagueData, week: number): AwardRecipient{
+    type bestTeam ={
+        teamName: string,
+        potential: number
+    };
+
+    let best: bestTeam = {teamName: "none", potential: -1};
+    const teams = leagueData.teams;
+    teams.forEach(t => {
+        const rosterEntries = t.roster.entries ?? [];
+        const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
+            const player = entry.playerPoolEntry.player;
+            player.defaultPositionId = getTruePosition(player);
+            return player;
+        })
+
+        const lineup = getOptimalLineup(players, week);
+        const potential = getWeekTotal(lineup, week);
+        if(potential > best.potential)
+        {
+            best = {teamName: t.name, potential: potential};
+        }
+    });
+
+    return {teamName: best.teamName, value: best.potential};
+}
+
+export function findLowestPotentialTeam(leagueData: LeagueData, week: number): AwardRecipient{
+    type worstTeam ={
+        teamName: string,
+        potential: number
+    };
+
+    let worst: worstTeam = {teamName: "none", potential: 1000};
+    const teams = leagueData.teams;
+    teams.forEach(t => {
+        const rosterEntries = t.roster.entries ?? [];
+        const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
+            const player = entry.playerPoolEntry.player;
+            player.defaultPositionId = getTruePosition(player);
+            return player;
+        })
+
+        const lineup = getOptimalLineup(players, week);
+        const potential = getWeekTotal(lineup, week);
+        if(potential > worst.potential)
+        {
+            worst = {teamName: t.name, potential: potential};
+        }
+    });
+
+    return {teamName: worst.teamName, value: worst.potential};
 }

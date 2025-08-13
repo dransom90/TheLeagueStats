@@ -103,7 +103,6 @@ export default function TeamLineupViewer({ year }: { year: number }) {
     setOptimalLineup(lineup);
 
     const optimalPoints = getWeekTotal(lineup, selectedWeek);
-    console.log("Optimal Points:", optimalPoints);
 
     setOptimalPoints(optimalPoints);
   }, [leagueData, selectedTeamId, selectedWeek]);
