@@ -6,6 +6,7 @@ type WeekTeam = {
   teamId: number;
   points: number;
   won: boolean;
+  victoryMargin?: number;
 };
 function getWeekTeams(leagueData: LeagueData, week: number): WeekTeam[] {
   const teams = leagueData.teams.map((team) => ({
@@ -30,9 +31,10 @@ function getWeekTeams(leagueData: LeagueData, week: number): WeekTeam[] {
 
       const homeWon = m.home.totalPoints > m.away.totalPoints;
       const awayWon = m.away.totalPoints > m.home.totalPoints;
+      const victoryMargin = Math.abs(m.home.totalPoints - m.away.totalPoints);
 
-      weekTeams.push({ teamName: homeTeam.teamName, teamId: m.home.teamId, points: m.home.totalPoints, won: homeWon });
-      weekTeams.push({ teamName: awayTeam.teamName, teamId: m.away.teamId, points: m.away.totalPoints, won: awayWon });
+      weekTeams.push({ teamName: homeTeam.teamName, teamId: m.home.teamId, points: m.home.totalPoints, won: homeWon, victoryMargin: homeWon ? victoryMargin : undefined });
+      weekTeams.push({ teamName: awayTeam.teamName, teamId: m.away.teamId, points: m.away.totalPoints, won: awayWon, victoryMargin: awayWon ? victoryMargin : undefined });
     } else {
       // Bye week
       const team = getTeam(m.home.teamId);
@@ -63,10 +65,41 @@ function findTeamByPoints(
   };
 }
 
+function findWinnersByWeek(leagueData: LeagueData, week: number): WeekTeam[]{
+    const weekTeams = getWeekTeams(leagueData, week);
+    const winners = weekTeams.filter(team => team.victoryMargin !== undefined);
+    if(winners.length === 0)
+    {
+        return [];
+    }
+
+    winners.sort((a,b) => (b.victoryMargin ?? 0) - (a.victoryMargin ?? 0));
+
+    return winners;
+}
+
 export function findLowestScore(leagueData: LeagueData, week: number): AwardRecipient{
     return findTeamByPoints(leagueData, week, false);
 }
 
 export function findHighestScore(leagueData: LeagueData, week: number): AwardRecipient{
     return findTeamByPoints(leagueData, week, true);
+}
+
+export function findLargestWin(leagueData: LeagueData, week: number): AwardRecipient{
+    const winners = findWinnersByWeek(leagueData, week);
+    const topWinner = winners[0];
+    return {
+    teamName: topWinner.teamName,
+    value: topWinner.victoryMargin ?? 0,
+  };
+}
+
+export function findSmallestWin(leagueData: LeagueData, week: number): AwardRecipient{
+    const winners = findWinnersByWeek(leagueData, week);
+    const lowestWinner = winners[winners.length - 1];
+    return {
+        teamName: lowestWinner.teamName,
+        value: lowestWinner.victoryMargin ?? 0,
+    }
 }
