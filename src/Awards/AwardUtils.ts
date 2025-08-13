@@ -1,7 +1,7 @@
 import type { LeagueData, Team } from "../lib/LeagueDataTypes";
 import type { AwardRecipient } from "./AwardTypes";
 import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
-import { getTruePosition, getWeekTotal, getActualTeamPoints } from "../lib/utils";
+import { getTruePosition, getWeekTotal, getActualTeamPoints, getWeeksPlayed } from "../lib/utils";
 
 type WeekTeam = {
   teamName: string;
@@ -200,5 +200,38 @@ export function findWorstManagedTeam(
     (cur, best) => cur < best,
     500
   );
+}
+
+export function getAllWeeklyAwards(leagueData: LeagueData) {
+  const weeksPlayed = getWeeksPlayed(leagueData);
+
+  const allAwards: {
+    week: number;
+    highestScore: AwardRecipient;
+    lowestScore: AwardRecipient;
+    highestPotential: AwardRecipient[];
+    lowestPotential: AwardRecipient[];
+    bestManaged: AwardRecipient[];
+    worstManaged: AwardRecipient[];
+    largestWin: AwardRecipient;
+    smallestWin: AwardRecipient;
+  }[] = [];
+
+  for (let week = 1; week <= weeksPlayed; week++) {
+    findHighestScore(leagueData, week);
+    allAwards.push({
+      week,
+      highestScore: findHighestScore(leagueData, week),
+      lowestScore: findLowestScore(leagueData, week),
+      highestPotential: findHighestPotentialTeams(leagueData, week),
+      lowestPotential: findLowestPotentialTeam(leagueData, week),
+      bestManaged: findBestManagedTeam(leagueData, week),
+      worstManaged: findBestManagedTeam(leagueData, week),
+      largestWin: findLargestWin(leagueData, week),
+      smallestWin: findSmallestWin(leagueData, week),
+    });
+  }
+
+  return allAwards;
 }
 

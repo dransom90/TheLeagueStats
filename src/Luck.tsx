@@ -81,7 +81,7 @@ export default function Luck({ selectedYear }: LuckProps) {
   }
 
   if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
+    return <div className="text-amber-400">Error: {error}</div>;
   }
 
   const weeklyRows = [];
@@ -128,7 +128,7 @@ export default function Luck({ selectedYear }: LuckProps) {
                   Congrats — you just banked
                   <span className="text-green-600"> Good Luck Points</span>.
                   Drop 140 and still lose? Sorry — that’s
-                  <span className="text-red-600"> Bad Luck Points</span>.
+                  <span className="text-amber-400"> Bad Luck Points</span>.
                 </p>
 
                 <div>
@@ -281,7 +281,7 @@ export default function Luck({ selectedYear }: LuckProps) {
                           t.totalLuck > 0
                             ? "text-green-600"
                             : t.totalLuck < 0
-                            ? "text-red-600"
+                            ? "text-amber-400"
                             : ""
                         }
                       >
