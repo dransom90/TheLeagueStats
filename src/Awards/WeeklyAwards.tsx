@@ -72,41 +72,60 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </CardTitle>
         </CardHeader>
         <CardDescription>
-          <p className="text-lg leading-relaxed">
+          <p className="text-lg leading-relaxed mb-3">
             This is where the{" "}
             <span className="font-bold text-green-600">bragging rights</span> 🏆
             and{" "}
-            <span className="font-bold text-red-600">
+            <span className="font-bold text-amber-400">
               walk-of-shame moments
             </span>{" "}
-            😳 get immortalized.{" "}
-            <span className="font-bold text-green-600">
-              Highest score of the week?
-            </span>{" "}
-            You’re the <span className="italic text-green-500">alpha</span> 🐺.{" "}
-            <span className="font-bold text-red-600">Lowest score?</span> Better
-            start making excuses 🙈.{" "}
-            <span className="font-bold text-green-600">
-              Nailed the perfect lineup?
-            </span>{" "}
-            We salute your <span className="italic text-green-500">genius</span>{" "}
-            💡. Left half your points{" "}
-            <span className="font-bold text-red-600">
-              rotting on the bench?
-            </span>{" "}
-            We’ll never let you forget it 🪦. From{" "}
-            <span className="font-bold text-green-600">blowout victories</span>{" "}
-            💥 to{" "}
-            <span className="font-bold text-red-600">nail-biter escapes</span>{" "}
-            😬 — and even the{" "}
-            <span className="italic text-green-500">
-              “how did you barely win with that?”
-            </span>{" "}
-            moments — the{" "}
-            <span className="font-bold text-green-600">Weekly Awards</span> call
-            out every <span className="text-green-600">triumph</span> ✅ and{" "}
-            <span className="text-red-600">tragedy</span> ❌.
+            😳 get immortalized:
           </p>
+          <ul className="text-lg leading-relaxed space-y-2 list-none">
+            <li>
+              🏆{" "}
+              <span className="font-bold text-green-600">Highest score:</span>{" "}
+              You’re the
+              <span className="italic text-green-500"> alpha</span> 🐺
+            </li>
+            <li>
+              😳 <span className="font-bold text-amber-400">Lowest score:</span>{" "}
+              Better start making excuses 🙈
+            </li>
+            <li>
+              💡{" "}
+              <span className="font-bold text-green-600">Perfect lineup:</span>{" "}
+              We salute your
+              <span className="italic text-green-500"> genius</span>
+            </li>
+            <li>
+              🪦{" "}
+              <span className="font-bold text-amber-400">
+                Points rotting on the bench:
+              </span>
+              We’ll never let you forget it
+            </li>
+            <li>
+              💥{" "}
+              <span className="font-bold text-green-600">
+                Blowout victories
+              </span>{" "}
+              ✅
+            </li>
+            <li>
+              😬{" "}
+              <span className="font-bold text-amber-400">
+                Nail-biter escapes
+              </span>{" "}
+              ❌
+            </li>
+            <li>
+              🤔{" "}
+              <span className="italic text-green-500">
+                “How did you barely win with that?”
+              </span>
+            </li>
+          </ul>
         </CardDescription>
       </Card>
     </div>

@@ -1,7 +1,7 @@
-import type { Entry, LeagueData, Player } from "../lib/LeagueDataTypes";
+import type { LeagueData, Team } from "../lib/LeagueDataTypes";
 import type { AwardRecipient } from "./AwardTypes";
 import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
-import { getTruePosition, getWeekTotal } from "../lib/utils";
+import { getTruePosition, getWeekTotal, getActualTeamPoints } from "../lib/utils";
 
 type WeekTeam = {
   teamName: string;
@@ -106,56 +106,99 @@ export function findSmallestWin(leagueData: LeagueData, week: number): AwardReci
     }
 }
 
-export function findHighestPotentialTeam(leagueData: LeagueData, week: number): AwardRecipient{
-    type bestTeam ={
-        teamName: string,
-        potential: number
-    };
+function findTeamsByMetric(
+  leagueData: LeagueData,
+  week: number,
+  metricFn: (team: Team) => number,
+  comparator: (current: number, best: number) => boolean,
+  initialBest: number
+): AwardRecipient[] {
+  let bestValue = initialBest;
+  const winners: AwardRecipient[] = [];
 
-    let best: bestTeam = {teamName: "none", potential: -1};
-    const teams = leagueData.teams;
-    teams.forEach(t => {
-        const rosterEntries = t.roster.entries ?? [];
-        const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
-            const player = entry.playerPoolEntry.player;
-            player.defaultPositionId = getTruePosition(player);
-            return player;
-        })
+  leagueData.teams.forEach(team => {
+    const value = metricFn(team);
 
-        const lineup = getOptimalLineup(players, week);
-        const potential = getWeekTotal(lineup, week);
-        if(potential > best.potential)
-        {
-            best = {teamName: t.name, potential: potential};
-        }
-    });
+    if (comparator(value, bestValue)) {
+      bestValue = value;
+      winners.length = 0; // reset ties
+      winners.push({ teamName: team.name, value });
+    } else if (value === bestValue) {
+      winners.push({ teamName: team.name, value });
+    }
+  });
 
-    return {teamName: best.teamName, value: best.potential};
+  return winners;
 }
 
-export function findLowestPotentialTeam(leagueData: LeagueData, week: number): AwardRecipient{
-    type worstTeam ={
-        teamName: string,
-        potential: number
-    };
-
-    let worst: worstTeam = {teamName: "none", potential: 1000};
-    const teams = leagueData.teams;
-    teams.forEach(t => {
-        const rosterEntries = t.roster.entries ?? [];
-        const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
-            const player = entry.playerPoolEntry.player;
-            player.defaultPositionId = getTruePosition(player);
-            return player;
-        })
-
-        const lineup = getOptimalLineup(players, week);
-        const potential = getWeekTotal(lineup, week);
-        if(potential > worst.potential)
-        {
-            worst = {teamName: t.name, potential: potential};
-        }
-    });
-
-    return {teamName: worst.teamName, value: worst.potential};
+// --- Metric functions ---
+function potentialMetric(team: Team, week: number): number {
+  const rosterEntries = team.roster.entries ?? [];
+  const players = rosterEntries.map(entry => {
+    const player = entry.playerPoolEntry.player;
+    player.defaultPositionId = getTruePosition(player);
+    return player;
+  });
+  const lineup = getOptimalLineup(players, week);
+  return getWeekTotal(lineup, week);
 }
+
+function managedGapMetric(team: Team, week: number, leagueData: LeagueData): number {
+  const teamPotential = potentialMetric(team, week);
+  const actual = getActualTeamPoints(leagueData, team.id, week);
+  return teamPotential - actual;
+}
+
+// --- Award functions ---
+export function findHighestPotentialTeams(
+  leagueData: LeagueData,
+  week: number
+) {
+  return findTeamsByMetric(
+    leagueData,
+    week,
+    t => potentialMetric(t, week),
+    (cur, best) => cur > best,
+    -1
+  );
+}
+
+export function findLowestPotentialTeam(
+  leagueData: LeagueData,
+  week: number
+) {
+  return findTeamsByMetric(
+    leagueData,
+    week,
+    t => potentialMetric(t, week),
+    (cur, best) => cur < best,
+    500
+  );
+}
+
+export function findBestManagedTeam(
+  leagueData: LeagueData,
+  week: number
+) {
+  return findTeamsByMetric(
+    leagueData,
+    week,
+    t => managedGapMetric(t, week, leagueData),
+    (cur, best) => cur > best,
+    -1
+  );
+}
+
+export function findWorstManagedTeam(
+  leagueData: LeagueData,
+  week: number
+) {
+  return findTeamsByMetric(
+    leagueData,
+    week,
+    t => managedGapMetric(t, week, leagueData),
+    (cur, best) => cur < best,
+    500
+  );
+}
+
