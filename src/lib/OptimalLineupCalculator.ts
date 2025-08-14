@@ -46,7 +46,6 @@ export function getOptimalLineup (players: Player[], selectedWeek: number): Play
             )?.appliedTotal ?? 0;
         return bPoints - aPoints;
         });
-        console.log("Sorted RBs:", sortedRbs);
         for (let i = 0; i < Math.min(2, sortedRbs.length); i++) {
         const rb = sortedRbs[i];
         lineup.push(rb);
@@ -186,10 +185,5 @@ export function getOptimalLineup (players: Player[], selectedWeek: number): Play
         usedPlayers.add(bestFlex.id);
         counts[23] = (counts[23] || 0) + 1;
     }
-
-    console.log(
-        "Optimal lineup: ",
-        lineup.map((p) => p.fullName)
-    );
     return lineup;
 };

@@ -1,5 +1,5 @@
-import type { LeagueData, Team } from "../lib/LeagueDataTypes";
-import type { AwardRecipient } from "./AwardTypes";
+import type { Entry, LeagueData, Player, Team } from "../lib/LeagueDataTypes";
+import type { AwardRecipient, WeekAwards } from "./AwardTypes";
 import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
 import { getTruePosition, getWeekTotal, getActualTeamPoints, getWeeksPlayed } from "../lib/utils";
 
@@ -80,30 +80,94 @@ function findWinnersByWeek(leagueData: LeagueData, week: number): WeekTeam[]{
     return winners;
 }
 
-export function findLowestScore(leagueData: LeagueData, week: number): AwardRecipient{
-    return findTeamByPoints(leagueData, week, false);
-}
+function findTeamsByValue(
+  teams: WeekTeam[],
+  getValue: (team: WeekTeam) => number,
+  compare: (a: number, b: number) => boolean
+): AwardRecipient[] {
+  let bestValue: number | undefined = undefined;
+  const winners: AwardRecipient[] = [];
 
-export function findHighestScore(leagueData: LeagueData, week: number): AwardRecipient{
-    return findTeamByPoints(leagueData, week, true);
-}
+  teams.forEach(team => {
+    const value = getValue(team);
 
-export function findLargestWin(leagueData: LeagueData, week: number): AwardRecipient{
-    const winners = findWinnersByWeek(leagueData, week);
-    const topWinner = winners[0];
-    return {
-    teamName: topWinner.teamName,
-    value: topWinner.victoryMargin ?? 0,
-  };
-}
-
-export function findSmallestWin(leagueData: LeagueData, week: number): AwardRecipient{
-    const winners = findWinnersByWeek(leagueData, week);
-    const lowestWinner = winners[winners.length - 1];
-    return {
-        teamName: lowestWinner.teamName,
-        value: lowestWinner.victoryMargin ?? 0,
+    if (bestValue === undefined || compare(value, bestValue)) {
+      bestValue = value;
+      winners.length = 0; // reset winners list
+      winners.push({ teamName: team.teamName, value });
+    } else if (value === bestValue) {
+      winners.push({ teamName: team.teamName, value });
     }
+  });
+
+  return winners;
+}
+
+export function findLowestScore(leagueData: LeagueData, week: number): AwardRecipient[] {
+  const weekTeams = getWeekTeams(leagueData, week);
+  return findTeamsByValue(weekTeams, t => t.points, (a, b) => a < b);
+}
+
+export function findHighestScore(leagueData: LeagueData, week: number): AwardRecipient[] {
+  const weekTeams = getWeekTeams(leagueData, week);
+  return findTeamsByValue(weekTeams, t => t.points, (a, b) => a > b);
+}
+
+export function findLargestWin(leagueData: LeagueData, week: number): AwardRecipient[] {
+
+  const weekTeams = getWeekTeams(leagueData, week);
+
+  // Filter only teams with a defined victoryMargin (winners)
+  const winners = weekTeams.filter(
+    team => team.victoryMargin !== undefined
+  );
+
+  // If no winners found
+  if (winners.length === 0) {
+    return [{ teamName: "undefined", value: 0 }];
+  }
+
+  // Find the max victoryMargin
+  const maxMargin = Math.max(
+    ...winners.map(team => team.victoryMargin ?? 0)
+  );
+
+  // Return all teams that match the max margin (handles ties)
+  return winners
+    .filter(team => (team.victoryMargin ?? 0) === maxMargin)
+    .map(team => ({
+      teamName: team.teamName,
+      value: team.victoryMargin ?? 0
+    }));
+}
+
+export function findSmallestWin(
+  leagueData: LeagueData,
+  week: number
+): AwardRecipient[] {
+  const weekTeams = getWeekTeams(leagueData, week);
+
+  // Only teams with a defined victoryMargin
+  const winners = weekTeams.filter(
+    team => team.victoryMargin !== undefined
+  );
+
+  if (winners.length === 0) {
+    return [{ teamName: "undefined", value: 0 }];
+  }
+
+  // Find the smallest victory margin
+  const minMargin = Math.min(
+    ...winners.map(team => team.victoryMargin ?? 0)
+  );
+
+  // Return all teams matching the smallest margin (handles ties)
+  return winners
+    .filter(team => (team.victoryMargin ?? 0) === minMargin)
+    .map(team => ({
+      teamName: team.teamName,
+      value: Math.round(team.victoryMargin ?? 0 * 100) / 100,
+    }));
 }
 
 function findTeamsByMetric(
@@ -140,6 +204,7 @@ function potentialMetric(team: Team, week: number): number {
     return player;
   });
   const lineup = getOptimalLineup(players, week);
+  const weekTotal = getWeekTotal(lineup, week);
   return getWeekTotal(lineup, week);
 }
 
@@ -153,14 +218,41 @@ function managedGapMetric(team: Team, week: number, leagueData: LeagueData): num
 export function findHighestPotentialTeams(
   leagueData: LeagueData,
   week: number
-) {
-  return findTeamsByMetric(
-    leagueData,
-    week,
-    t => potentialMetric(t, week),
-    (cur, best) => cur > best,
-    -1
-  );
+): AwardRecipient[] {
+  let bestValue = -1;
+  const tiedTeams: AwardRecipient[] = [];
+
+  leagueData.teams.forEach(team => {
+
+    const rosterEntries = team.roster.entries ?? [];
+
+    const players: Player[] = rosterEntries.map((entry: Entry) => {
+      const player = entry.playerPoolEntry.player;
+      player.defaultPositionId = getTruePosition(player);
+      return player;
+    });
+
+    const weekPlayers = players.map(player => ({
+  ...player,
+  stats: player.stats.filter(s => s.scoringPeriodId === week)
+}));
+
+    console.log("roster for team ", team.name, " and week ", week);
+    console.log(weekPlayers);
+
+    const lineup = getOptimalLineup(weekPlayers, week);
+    const teamPotential = getWeekTotal(lineup, week);
+
+    if (teamPotential > bestValue) {
+      bestValue = teamPotential;
+      tiedTeams.length = 0; // clear old ties
+      tiedTeams.push({ teamName: team.name, value: teamPotential });
+    } else if (teamPotential === bestValue) {
+      tiedTeams.push({ teamName: team.name, value: teamPotential });
+    }
+  });
+
+  return tiedTeams;
 }
 
 export function findLowestPotentialTeam(
@@ -179,15 +271,36 @@ export function findLowestPotentialTeam(
 export function findBestManagedTeam(
   leagueData: LeagueData,
   week: number
-) {
-  return findTeamsByMetric(
-    leagueData,
-    week,
-    t => managedGapMetric(t, week, leagueData),
-    (cur, best) => cur > best,
-    -1
-  );
+): AwardRecipient[] {
+  let bestValue = -1;
+  let winners: AwardRecipient[] = [];
+
+  leagueData.teams.forEach(team => {
+    const rosterEntries = team.roster.entries ?? [];
+
+    const players: Player[] = rosterEntries.map((entry: Entry) => {
+      const player = entry.playerPoolEntry.player;
+      player.defaultPositionId = getTruePosition(player);
+      return player;
+    });
+
+    const lineup = getOptimalLineup(players, week);
+    const teamPotential = getWeekTotal(lineup, week);
+    const actual = getActualTeamPoints(leagueData, team.id, week);
+
+    const managedGap = Math.round((teamPotential - actual) * 100) / 100 ; // smaller gap = better managed, round to 2 decimal places
+
+    if (managedGap > bestValue) {
+      bestValue = managedGap;
+      winners = [{ teamName: team.name, value: managedGap }];
+    } else if (managedGap === bestValue) {
+      winners.push({ teamName: team.name, value: managedGap });
+    }
+  });
+
+  return winners;
 }
+
 
 export function findWorstManagedTeam(
   leagueData: LeagueData,
@@ -202,36 +315,28 @@ export function findWorstManagedTeam(
   );
 }
 
-export function getAllWeeklyAwards(leagueData: LeagueData) {
-  const weeksPlayed = getWeeksPlayed(leagueData);
-
-  const allAwards: {
-    week: number;
-    highestScore: AwardRecipient;
-    lowestScore: AwardRecipient;
-    highestPotential: AwardRecipient[];
-    lowestPotential: AwardRecipient[];
-    bestManaged: AwardRecipient[];
-    worstManaged: AwardRecipient[];
-    largestWin: AwardRecipient;
-    smallestWin: AwardRecipient;
-  }[] = [];
-
-  for (let week = 1; week <= weeksPlayed; week++) {
-    findHighestScore(leagueData, week);
-    allAwards.push({
-      week,
-      highestScore: findHighestScore(leagueData, week),
-      lowestScore: findLowestScore(leagueData, week),
-      highestPotential: findHighestPotentialTeams(leagueData, week),
-      lowestPotential: findLowestPotentialTeam(leagueData, week),
-      bestManaged: findBestManagedTeam(leagueData, week),
-      worstManaged: findBestManagedTeam(leagueData, week),
-      largestWin: findLargestWin(leagueData, week),
-      smallestWin: findSmallestWin(leagueData, week),
-    });
+export function getAllWeeklyAwards(leagueData: LeagueData | null, selectedWeek: number) {
+  //const weeksPlayed = getWeeksPlayed(leagueData);
+  if(!leagueData)
+  {
+    return [];
   }
+
+  const allAwards: WeekAwards[] = [];
+
+  //for (let week = 1; week <= weeksPlayed; week++) {
+    allAwards.push({
+      week: selectedWeek,
+      highestScore: findHighestScore(leagueData, selectedWeek),
+      lowestScore: findLowestScore(leagueData, selectedWeek),
+      highestPotential: findHighestPotentialTeams(leagueData, selectedWeek),
+      lowestPotential: findLowestPotentialTeam(leagueData, selectedWeek),
+      bestManaged: findBestManagedTeam(leagueData, selectedWeek),
+      worstManaged: findWorstManagedTeam(leagueData, selectedWeek),
+      largestWin: findLargestWin(leagueData, selectedWeek),
+      smallestWin: findSmallestWin(leagueData, selectedWeek),
+    });
+  //}
 
   return allAwards;
 }
-

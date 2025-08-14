@@ -35,8 +35,6 @@ export function getActualTeamPoints(leagueData: LeagueData, teamId: number, sele
 }
 
 export function getWeekTotal(players: Player[], selectedWeek: number): number {
-  console.log("Calculating total points for week:", selectedWeek);
-  console.log("Players:", players);
   return players.reduce((total, player) => {
     const stat = player.stats.find(
       s =>
