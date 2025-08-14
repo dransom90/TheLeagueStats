@@ -25,7 +25,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../@/components/ui/card";
-import type { LeagueData } from "../lib/LeagueDataTypes";
 import { getAllWeeklyAwards } from "./AwardUtils";
 import type { WeekAwards } from "./AwardTypes";
 import {
