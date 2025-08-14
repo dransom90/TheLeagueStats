@@ -46,7 +46,6 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
   const [weeksPlayed, setWeeksPlayed] = useState<number>(0);
   const [awardData, setAwardData] = useState<WeekAwards[]>([]);
   const [selectedWeek, setSelectedWeek] = useState<number>(1);
-  const [leagueData, setLeagueData] = useState<LeagueData | null>(null);
 
   useEffect(() => {
     const fetchLeagueData = async () => {
@@ -61,9 +60,8 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
         }
 
         const data = await response.json();
-        setLeagueData(data);
         const weeksPlayed = getWeeksPlayed(data);
-        setAwardData(getAllWeeklyAwards(leagueData, selectedWeek));
+        setAwardData(getAllWeeklyAwards(data, selectedWeek));
         setWeeksPlayed(weeksPlayed);
       } catch (error) {
         console.error("Error loading league data:", error);
@@ -73,7 +71,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
     };
 
     fetchLeagueData();
-  }, [leagueData, selectedWeek]);
+  }, [selectedYear, selectedWeek]);
 
   // useEffect(() => {
   //   if (!leagueData) return;

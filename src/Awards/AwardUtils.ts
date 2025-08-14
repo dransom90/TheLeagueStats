@@ -1,7 +1,7 @@
 import type { Entry, LeagueData, Player, Team } from "../lib/LeagueDataTypes";
 import type { AwardRecipient, WeekAwards } from "./AwardTypes";
 import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
-import { getTruePosition, getWeekTotal, getActualTeamPoints, getWeeksPlayed } from "../lib/utils";
+import { getTruePosition, getWeekTotal, getActualTeamPoints } from "../lib/utils";
 
 type WeekTeam = {
   teamName: string;
@@ -49,36 +49,36 @@ function getWeekTeams(leagueData: LeagueData, week: number): WeekTeam[] {
   return weekTeams;
 }
 
-function findTeamByPoints(
-  leagueData: LeagueData,
-  week: number,
-  findHighest: boolean
-): AwardRecipient {
-  const weekTeams = getWeekTeams(leagueData, week);
-  if (weekTeams.length === 0) return { teamName: "undefined", value: 0 };
+// function findTeamByPoints(
+//   leagueData: LeagueData,
+//   week: number,
+//   findHighest: boolean
+// ): AwardRecipient {
+//   const weekTeams = getWeekTeams(leagueData, week);
+//   if (weekTeams.length === 0) return { teamName: "undefined", value: 0 };
 
-  const sorted = [...weekTeams].sort((a, b) => b.points - a.points);
+//   const sorted = [...weekTeams].sort((a, b) => b.points - a.points);
 
-  const targetEntry = findHighest ? sorted[0] : sorted[sorted.length - 1];
+//   const targetEntry = findHighest ? sorted[0] : sorted[sorted.length - 1];
 
-  return {
-    teamName: targetEntry.teamName,
-    value: targetEntry.points,
-  };
-}
+//   return {
+//     teamName: targetEntry.teamName,
+//     value: targetEntry.points,
+//   };
+// }
 
-function findWinnersByWeek(leagueData: LeagueData, week: number): WeekTeam[]{
-    const weekTeams = getWeekTeams(leagueData, week);
-    const winners = weekTeams.filter(team => team.victoryMargin !== undefined);
-    if(winners.length === 0)
-    {
-        return [];
-    }
+// function findWinnersByWeek(leagueData: LeagueData, week: number): WeekTeam[]{
+//     const weekTeams = getWeekTeams(leagueData, week);
+//     const winners = weekTeams.filter(team => team.victoryMargin !== undefined);
+//     if(winners.length === 0)
+//     {
+//         return [];
+//     }
 
-    winners.sort((a,b) => (b.victoryMargin ?? 0) - (a.victoryMargin ?? 0));
+//     winners.sort((a,b) => (b.victoryMargin ?? 0) - (a.victoryMargin ?? 0));
 
-    return winners;
-}
+//     return winners;
+// }
 
 function findTeamsByValue(
   teams: WeekTeam[],
@@ -204,7 +204,7 @@ function potentialMetric(team: Team, week: number): number {
     return player;
   });
   const lineup = getOptimalLineup(players, week);
-  const weekTotal = getWeekTotal(lineup, week);
+  //const weekTotal = getWeekTotal(lineup, week);
   return getWeekTotal(lineup, week);
 }
 
@@ -236,9 +236,6 @@ export function findHighestPotentialTeams(
   ...player,
   stats: player.stats.filter(s => s.scoringPeriodId === week)
 }));
-
-    console.log("roster for team ", team.name, " and week ", week);
-    console.log(weekPlayers);
 
     const lineup = getOptimalLineup(weekPlayers, week);
     const teamPotential = getWeekTotal(lineup, week);
@@ -316,7 +313,6 @@ export function findWorstManagedTeam(
 }
 
 export function getAllWeeklyAwards(leagueData: LeagueData | null, selectedWeek: number) {
-  //const weeksPlayed = getWeeksPlayed(leagueData);
   if(!leagueData)
   {
     return [];
