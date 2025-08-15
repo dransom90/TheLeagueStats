@@ -259,9 +259,9 @@ export function findLowestPotentialTeam(
 ) {
   return findTeamsByMetric(
     leagueData,
-    week,
+    //week,
     t => potentialMetric(t, week),
-    (cur, best) => cur < best,
+    (cur: number, best: number) => cur < best,
     500
   );
 }
