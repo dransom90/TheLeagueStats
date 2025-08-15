@@ -18,13 +18,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../../@/components/ui/accordion";
-import {
-  Card,
-  CardContent,
-  //CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../@/components/ui/card";
 import { getAllWeeklyAwards } from "./AwardUtils";
 import type { WeekAwards } from "./AwardTypes";
 import {
@@ -35,6 +28,7 @@ import {
   SelectValue,
 } from "../../@/components/ui/select";
 import { getWeeksPlayed } from "../lib/utils";
+import { FlipAwardCard } from "./FlipAwardCard";
 
 interface AwardProps {
   selectedYear: number;
@@ -74,7 +68,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
 
   const weekData = awardData.find((w) => w.week === selectedWeek);
   return (
-    <div>
+    <div className="flex justify-center items-center gap-6 flex-wrap">
       <Accordion type="single" collapsible>
         <AccordionItem value="weekly-awards-intro">
           <AccordionTrigger className="text-lg font-bold">
@@ -161,26 +155,20 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
         </Select>
       </div>
 
+      {/* <div className="flex justify-center items-center gap-6 flex-wrap"></div> */}
       {/* Awards for the selected week */}
       {weekData && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div className=" flex justify-center grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           {/* The Juggernaut */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-green-600  cursor-help">
-                  🏆 The Juggernaut
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Juggernaut — Pure offensive firepower. This award goes to
+          <FlipAwardCard
+            emoji="🏆"
+            title="The Juggernaut"
+            description="The Juggernaut — Pure offensive firepower. This award goes to
                   the team that lit up the scoreboard more than anyone else this
                   week, stacking points like they were playing Madden on rookie
                   mode. Win or lose, nobody came close to matching this fantasy
-                  fireworks show.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+                  fireworks show."
+            frontContent={
               <div className="space-y-1 ml-5 text-white">
                 {weekData.highestScore.map((team, idx) => (
                   <div key={idx}>
@@ -191,26 +179,19 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Golden Turd */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
-                  💩 The Golden Turd
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Golden Turd — A true masterpiece of mediocrity. This honor
+          <FlipAwardCard
+            emoji="💩"
+            title="The Golden Turd"
+            description="The Golden Turd — A true masterpiece of mediocrity. This honor
                   is reserved for the team that managed to put up the fewest
                   points of the week, turning a fantasy matchup into a tragic
-                  comedy. It’s not just losing — it’s losing with style.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1 ml-5 text-white">
+                  comedy. It’s not just losing — it’s losing with style."
+            frontContent={
+              <div className="space-y-1 ml-5 text-white flex flex-col h-full">
                 {weekData.lowestScore.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
@@ -220,204 +201,150 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Bill Belichick */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
-                  🐐 The Bill Belichick
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Bill Belichick — Either you’re a fantasy genius, or you
+          <FlipAwardCard
+            emoji="🐐"
+            title="The Bill Belichick"
+            description="The Bill Belichick — Either you’re a fantasy genius, or you
                   just blindly set your lineup and stumbled into perfection.
                   This award goes to the team that left almost nothing on the
                   bench… whether by masterful planning or sheer dumb luck, we’ll
-                  never know.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-1 ml-5 text-white">
+                  never know."
+            frontContent={
+              <div className="space-y-1 ml-5 text-white flex flex-col h-full">
                 {weekData.bestManaged.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium text-lg block">
+                    <span className="font-medium text-lg block ">
                       {team.teamName}
                     </span>
-                    <span className="block">
-                      Left {team.value} points on the bench
-                    </span>
+                    <span>Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Rod Marinelli with tooltip */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
-                  🐑 The Rod Marinelli
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Rod Marinelli – For the team that proved you can have all
+          <FlipAwardCard
+            emoji="🐑"
+            title="The Rod Marinelli"
+            description="The Rod Marinelli – For the team that proved you can have all
                   the talent in the world… as long as it stays on the bench.
                   This honor goes to the coach who left the most points rotting
                   in reserve, watching helplessly as their starting lineup
                   sputtered. Sure, you could have won big — but hey, moral
                   victories count too, right? named after NFL coach Rod
-                  Marinelli who went 0–16 in 2008.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+                  Marinelli who went 0–16 in 2008."
+            frontContent={
               <div className="space-y-1 ml-5 text-white">
                 {weekData.worstManaged.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">
-                      Left {team.value} points on the bench
-                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Patriot */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
-                  🥱 The Patriot
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Patriot — Absolute domination. This award goes to the team
+          <FlipAwardCard
+            emoji="🥱"
+            title="The Patriot"
+            description="The Patriot — Absolute domination. This award goes to the team
                   that didn’t just win — they crushed their opponent into
                   fantasy dust, posting the largest victory margin of the week.
                   It was less a game and more a public service announcement
                   about who’s in charge. Named after the biggest blowout in NFL
-                  history (Google it...)
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+                  history (Google it...)"
+            frontContent={
               <div className="space-y-1 ml-5 text-white">
                 {weekData.largestWin.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">
-                      Won their matchup by {team.value} points
-                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Barn Burner */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
-                  🙈 The Barn Burner
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Barn Burner — Forget blowouts, this was a nail-biter for
+          <FlipAwardCard
+            emoji="🙈"
+            title="The Barn Burner"
+            description="The Barn Burner — Forget blowouts, this was a nail-biter for
                   the ages. This award goes to the team that squeaked out a win
                   by the slimmest of margins, leaving their opponent (and
                   probably themselves) wondering what could have been if just
-                  one more play went differently.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+                  one more play went differently."
+            frontContent={
               <div className="space-y-1 ml-5 text-white">
                 {weekData.smallestWin.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">
-                      Won their matchup by {team.value} points
-                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Kurt Warner */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-green-500 cursor-help">
-                  💡 The Kurt Warner
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Kurt Warner — Like stocking your bench with MVPs, this
+          <FlipAwardCard
+            emoji="💡"
+            title="The Kurt Warner"
+            description="The Kurt Warner — Like stocking your bench with MVPs, this
                   award goes to the team whose roster could have lit up the
                   scoreboard more than anyone else… if only the right players
                   had been started. A reminder that in fantasy football,
                   potential points are the stuff of dreams — and sometimes
-                  regret.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+                  regret."
+            frontContent={
               <div className="space-y-1 ml-5 text-white">
                 {weekData.highestPotential.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">
-                      Had a potential score of {team.value}
-                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
 
           {/* The Ryan Leaf */}
-          <Card className="bg-black">
-            <CardHeader>
-              <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-xl text-orange-500 cursor-help">
-                  🍃 The Ryan Leaf
-                </CardTitle>
-                <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  The Ryan Leaf — A masterclass in unfulfilled promise, this
+          <FlipAwardCard
+            emoji="🍃"
+            title="The Ryan Leaf"
+            description="The Ryan Leaf — A masterclass in unfulfilled promise, this
                   award goes to the team whose roster had the least scoring
                   potential of the week. No matter how you shuffled the lineup,
                   the fantasy gods simply weren’t handing out points. Sometimes,
-                  it’s just not your season… or your week… or your anything.
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+                  it’s just not your season… or your week… or your anything."
+            frontContent={
               <div className="space-y-1 ml-5 text-white">
-                {weekData.lowestPotential.map((team, idx) => (
+                {weekData.highestPotential.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">
-                      Had a potential score of {team.value}
-                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            }
+          />
         </div>
       )}
     </div>
