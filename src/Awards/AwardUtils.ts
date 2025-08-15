@@ -173,7 +173,7 @@ export function findSmallestWin(
 
 function findTeamsByMetric(
   leagueData: LeagueData,
-  week: number,
+  //week: number,
   metricFn: (team: Team) => number,
   comparator: (current: number, best: number) => boolean,
   initialBest: number
@@ -209,11 +209,11 @@ function potentialMetric(team: Team, week: number): number {
   return getWeekTotal(lineup, week);
 }
 
-function managedGapMetric(team: Team, week: number, leagueData: LeagueData): number {
-  const teamPotential = potentialMetric(team, week);
-  const actual = getActualTeamPoints(leagueData, team.id, week);
-  return teamPotential - actual;
-}
+// function managedGapMetric(team: Team, week: number, leagueData: LeagueData): number {
+//   const teamPotential = potentialMetric(team, week);
+//   const actual = getActualTeamPoints(leagueData, team.id, week);
+//   return teamPotential - actual;
+// }
 
 // --- Award functions ---
 export function findHighestPotentialTeams(
