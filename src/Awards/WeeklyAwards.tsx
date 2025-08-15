@@ -42,7 +42,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
 
   useEffect(() => {
     const fetchLeagueData = async () => {
-      //setLoading(true);
+      setLoading(true);
       try {
         const response = await fetch(
           `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${selectedYear}/segments/0/leagues/1525510?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId=${selectedWeek}`
@@ -59,7 +59,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
       } catch (error) {
         console.error("Error loading league data:", error);
       } finally {
-        //setLoading(false);
+        setLoading(false);
       }
     };
 
@@ -67,6 +67,9 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
   }, [selectedYear, selectedWeek]);
 
   const weekData = awardData.find((w) => w.week === selectedWeek);
+  if (loading) {
+    return <div>Loading awards...</div>;
+  }
   return (
     <div className="flex justify-center items-center gap-6 flex-wrap">
       <Accordion type="single" collapsible>
