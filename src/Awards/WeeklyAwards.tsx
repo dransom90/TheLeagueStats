@@ -227,7 +227,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                     <span className="font-medium text-lg block ">
                       {team.teamName}
                     </span>
-                    <span>Scored {team.value} points</span>
+                    <span>Left {team.value} points on the bench</span>
                   </div>
                 ))}
               </div>
@@ -341,7 +341,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                   it’s just not your season… or your week… or your anything."
             frontContent={
               <div className="space-y-1 ml-5 text-white">
-                {weekData.highestPotential.map((team, idx) => (
+                {weekData.lowestPotential.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium text-lg block">
                       {team.teamName}
