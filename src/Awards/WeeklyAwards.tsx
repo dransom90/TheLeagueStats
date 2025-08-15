@@ -72,34 +72,6 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
     fetchLeagueData();
   }, [selectedYear, selectedWeek]);
 
-  // useEffect(() => {
-  //   if (!leagueData) return;
-
-  //   const teamScore = getActualTeamPoints(
-  //     leagueData,
-  //     team?.id ?? 0,
-  //     selectedWeek
-  //   );
-  //   setActualPoints(teamScore);
-  //   if (!team) {
-  //     setOptimalLineup([]);
-  //     return;
-  //   }
-  //   const rosterEntries = team?.roster?.entries ?? [];
-  //   const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
-  //     const player = entry.playerPoolEntry.player;
-  //     const truePosition = getTruePosition(player);
-  //     player.defaultPositionId = truePosition;
-  //     return player;
-  //   });
-
-  //   const lineup = getOptimalLineup(players, selectedWeek);
-  //   setOptimalLineup(lineup);
-
-  //   const optimalPoints = getWeekTotal(lineup, selectedWeek);
-
-  //   setOptimalPoints(optimalPoints);
-  // }, [leagueData, selectedTeamId, selectedWeek]);
   const weekData = awardData.find((w) => w.week === selectedWeek);
   return (
     <div>
@@ -170,6 +142,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
         </AccordionItem>
       </Accordion>
 
+      {/* Week Selection*/}
       <div className="flex justify-center space-x-4 mb-6 mt-4">
         <Select onValueChange={(week) => setSelectedWeek(Number(week))}>
           <SelectTrigger className="w-[150px] bg-white text-black dark:bg-white dark:text-black border border-gray-300">
@@ -192,10 +165,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
       {weekData && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           {/* The Juggernaut */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-green-600  cursor-help">
+                <CardTitle className="font-semibold text-xl text-green-600  cursor-help">
                   🏆 The Juggernaut
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -208,7 +181,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.highestScore.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -220,10 +193,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Golden Turd */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-amber-400 cursor-help">
+                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
                   💩 The Golden Turd
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -235,7 +208,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.lowestScore.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -247,10 +220,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Bill Belichick */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-amber-400 cursor-help">
+                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
                   🐐 The Bill Belichick
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -263,7 +236,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.bestManaged.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -275,21 +248,25 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Rod Marinelli with tooltip */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-amber-400 cursor-help">
+                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
                   🐑 The Rod Marinelli
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
-                  This award goes to the team with the lowest potential score
-                  for the week, named after NFL coach Rod Marinelli who went
-                  0–16 in 2008.
+                  The Rod Marinelli – For the team that proved you can have all
+                  the talent in the world… as long as it stays on the bench.
+                  This honor goes to the coach who left the most points rotting
+                  in reserve, watching helplessly as their starting lineup
+                  sputtered. Sure, you could have won big — but hey, moral
+                  victories count too, right? named after NFL coach Rod
+                  Marinelli who went 0–16 in 2008.
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.worstManaged.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -301,10 +278,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Patriot */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-amber-400 cursor-help">
+                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
                   🥱 The Patriot
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -318,7 +295,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.largestWin.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -330,10 +307,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Barn Burner */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-amber-400 cursor-help">
+                <CardTitle className="font-semibold text-xl text-amber-400 cursor-help">
                   🙈 The Barn Burner
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -346,7 +323,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.smallestWin.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -358,10 +335,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Kurt Warner */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-green-500 cursor-help">
+                <CardTitle className="font-semibold text-xl text-green-500 cursor-help">
                   💡 The Kurt Warner
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -375,7 +352,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.highestPotential.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>
@@ -387,10 +364,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
           </Card>
 
           {/* The Ryan Leaf */}
-          <Card>
+          <Card className="bg-black">
             <CardHeader>
               <div className="relative group inline-block">
-                <CardTitle className="font-semibold text-orange-500 cursor-help">
+                <CardTitle className="font-semibold text-xl text-orange-500 cursor-help">
                   🍃 The Ryan Leaf
                 </CardTitle>
                 <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-48 rounded bg-black text-white text-xs p-2 text-center shadow-lg">
@@ -403,7 +380,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-1 ml-5">
+              <div className="space-y-1 ml-5 text-white">
                 {weekData.lowestPotential.map((team, idx) => (
                   <div key={idx}>
                     <span className="font-medium block">{team.teamName}</span>

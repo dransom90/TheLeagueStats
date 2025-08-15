@@ -10,6 +10,7 @@ type WeekTeam = {
   won: boolean;
   victoryMargin?: number;
 };
+
 function getWeekTeams(leagueData: LeagueData, week: number): WeekTeam[] {
   const teams = leagueData.teams.map((team) => ({
     teamId: team.id,
@@ -33,7 +34,7 @@ function getWeekTeams(leagueData: LeagueData, week: number): WeekTeam[] {
 
       const homeWon = m.home.totalPoints > m.away.totalPoints;
       const awayWon = m.away.totalPoints > m.home.totalPoints;
-      const victoryMargin = Math.abs(m.home.totalPoints - m.away.totalPoints);
+      const victoryMargin = Math.round(Math.abs(m.home.totalPoints - m.away.totalPoints) * 100) / 100;
 
       weekTeams.push({ teamName: homeTeam.teamName, teamId: m.home.teamId, points: m.home.totalPoints, won: homeWon, victoryMargin: homeWon ? victoryMargin : undefined });
       weekTeams.push({ teamName: awayTeam.teamName, teamId: m.away.teamId, points: m.away.totalPoints, won: awayWon, victoryMargin: awayWon ? victoryMargin : undefined });
@@ -137,10 +138,10 @@ export function findLargestWin(leagueData: LeagueData, week: number): AwardRecip
     .filter(team => (team.victoryMargin ?? 0) === maxMargin)
     .map(team => ({
       teamName: team.teamName,
-      value: team.victoryMargin ?? 0
+      value: team.victoryMargin ?? 0,
     }));
 }
-
+ 
 export function findSmallestWin(
   leagueData: LeagueData,
   week: number
@@ -166,7 +167,7 @@ export function findSmallestWin(
     .filter(team => (team.victoryMargin ?? 0) === minMargin)
     .map(team => ({
       teamName: team.teamName,
-      value: Math.round(team.victoryMargin ?? 0 * 100) / 100,
+      value: team.victoryMargin ?? 0,
     }));
 }
 
@@ -181,7 +182,7 @@ function findTeamsByMetric(
   const winners: AwardRecipient[] = [];
 
   leagueData.teams.forEach(team => {
-    const value = metricFn(team);
+    const value = Math.round(metricFn(team) * 100) / 100;
 
     if (comparator(value, bestValue)) {
       bestValue = value;
@@ -269,7 +270,7 @@ export function findBestManagedTeam(
   leagueData: LeagueData,
   week: number
 ): AwardRecipient[] {
-  let bestValue = -1;
+  let bestValue = 500;
   let winners: AwardRecipient[] = [];
 
   leagueData.teams.forEach(team => {
@@ -287,7 +288,7 @@ export function findBestManagedTeam(
 
     const managedGap = Math.round((teamPotential - actual) * 100) / 100 ; // smaller gap = better managed, round to 2 decimal places
 
-    if (managedGap > bestValue) {
+    if (managedGap < bestValue) {
       bestValue = managedGap;
       winners = [{ teamName: team.name, value: managedGap }];
     } else if (managedGap === bestValue) {
@@ -303,13 +304,33 @@ export function findWorstManagedTeam(
   leagueData: LeagueData,
   week: number
 ) {
-  return findTeamsByMetric(
-    leagueData,
-    week,
-    t => managedGapMetric(t, week, leagueData),
-    (cur, best) => cur < best,
-    500
-  );
+  let worstValue = -1;
+  let winners: AwardRecipient[] = [];
+
+  leagueData.teams.forEach(team => {
+    const rosterEntries = team.roster.entries ?? [];
+
+    const players: Player[] = rosterEntries.map((entry: Entry) => {
+      const player = entry.playerPoolEntry.player;
+      player.defaultPositionId = getTruePosition(player);
+      return player;
+    });
+
+    const lineup = getOptimalLineup(players, week);
+    const teamPotential = getWeekTotal(lineup, week);
+    const actual = getActualTeamPoints(leagueData, team.id, week);
+
+    const managedGap = Math.round((teamPotential - actual) * 100) / 100 ; // smaller gap = better managed, round to 2 decimal places
+
+    if (managedGap > worstValue) {
+      worstValue = managedGap;
+      winners = [{ teamName: team.name, value: managedGap }];
+    } else if (managedGap === worstValue) {
+      winners.push({ teamName: team.name, value: managedGap });
+    }
+  });
+
+  return winners;
 }
 
 export function getAllWeeklyAwards(leagueData: LeagueData | null, selectedWeek: number) {
