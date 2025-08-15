@@ -86,6 +86,7 @@ export default function TeamLineupViewer({ year }: { year: number }) {
       team?.id ?? 0,
       selectedWeek
     );
+
     setActualPoints(teamScore);
     if (!team) {
       setOptimalLineup([]);

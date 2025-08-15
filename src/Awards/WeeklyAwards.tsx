@@ -184,8 +184,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.highestScore.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
@@ -211,8 +213,10 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.lowestScore.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">Scored {team.value} points</span>
                   </div>
                 ))}
               </div>
@@ -239,8 +243,12 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.bestManaged.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">
+                      Left {team.value} points on the bench
+                    </span>
                   </div>
                 ))}
               </div>
@@ -269,8 +277,12 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.worstManaged.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">
+                      Left {team.value} points on the bench
+                    </span>
                   </div>
                 ))}
               </div>
@@ -298,8 +310,12 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.largestWin.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">
+                      Won their matchup by {team.value} points
+                    </span>
                   </div>
                 ))}
               </div>
@@ -326,8 +342,12 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.smallestWin.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">
+                      Won their matchup by {team.value} points
+                    </span>
                   </div>
                 ))}
               </div>
@@ -355,8 +375,12 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.highestPotential.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">
+                      Had a potential score of {team.value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -383,8 +407,12 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
               <div className="space-y-1 ml-5 text-white">
                 {weekData.lowestPotential.map((team, idx) => (
                   <div key={idx}>
-                    <span className="font-medium block">{team.teamName}</span>
-                    <span className="block">{team.value}</span>
+                    <span className="font-medium text-lg block">
+                      {team.teamName}
+                    </span>
+                    <span className="block">
+                      Had a potential score of {team.value}
+                    </span>
                   </div>
                 ))}
               </div>
