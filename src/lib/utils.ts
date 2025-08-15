@@ -35,8 +35,6 @@ export function getActualTeamPoints(leagueData: LeagueData, teamId: number, sele
 }
 
 export function getWeekTotal(players: Player[], selectedWeek: number): number {
-  console.log("Calculating total points for week:", selectedWeek);
-  console.log("Players:", players);
   return players.reduce((total, player) => {
     const stat = player.stats.find(
       s =>
@@ -58,4 +56,19 @@ export function getWeeksPlayed(leagueData: LeagueData): number {
   }
 
   return leagueData.status.currentMatchupPeriod;
+}
+
+export function getTruePosition(player: Player): number {
+  const slots = player.eligibleSlots;
+
+  if (slots.includes(23)) {
+    if (slots.includes(2)) {
+      return 2; // RB
+    }
+    if (slots.includes(4)) {
+      return 4; // WR
+    }
+    return 6; // TE
+  }
+  return player.defaultPositionId;
 }

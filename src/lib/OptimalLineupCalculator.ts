@@ -11,16 +11,24 @@ export function getOptimalLineup (players: Player[], selectedWeek: number): Play
     // Get the QBs and add the highest scoring one
     const qbs = copiedPlayers.filter((p) => p.defaultPositionId === 1);
     if (qbs.length > 0) {
-        const bestQB = qbs.reduce((prev, curr) => {
-        const prevPoints =
-            prev.stats.find((s) => s.scoringPeriodId === selectedWeek)
-            ?.appliedTotal ?? 0;
-        const currPoints =
-            curr.stats.find((s) => s.scoringPeriodId === selectedWeek)
-            ?.appliedTotal ?? 0;
-
-        return prevPoints > currPoints ? prev : curr;
+        const sortedQbs = qbs.sort((a,b) => {
+            const aPoints =
+            a.stats.find(
+            (s) =>
+                s.scoringPeriodId === selectedWeek &&
+                s.statSourceId === 0 &&
+                s.statSplitTypeId === 1
+            )?.appliedTotal ?? 0;
+        const bPoints =
+            b.stats.find(
+            (s) =>
+                s.scoringPeriodId === selectedWeek &&
+                s.statSourceId === 0 &&
+                s.statSplitTypeId === 1
+            )?.appliedTotal ?? 0;
+        return bPoints - aPoints;
         });
+        const bestQB = sortedQbs[0];
         lineup.push(bestQB);
         usedPlayers.add(bestQB.id);
         counts[0] = (counts[0] || 0) + 1;
@@ -46,7 +54,6 @@ export function getOptimalLineup (players: Player[], selectedWeek: number): Play
             )?.appliedTotal ?? 0;
         return bPoints - aPoints;
         });
-        console.log("Sorted RBs:", sortedRbs);
         for (let i = 0; i < Math.min(2, sortedRbs.length); i++) {
         const rb = sortedRbs[i];
         lineup.push(rb);
@@ -186,10 +193,5 @@ export function getOptimalLineup (players: Player[], selectedWeek: number): Play
         usedPlayers.add(bestFlex.id);
         counts[23] = (counts[23] || 0) + 1;
     }
-
-    console.log(
-        "Optimal lineup: ",
-        lineup.map((p) => p.fullName)
-    );
     return lineup;
 };
