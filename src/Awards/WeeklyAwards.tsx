@@ -58,6 +58,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
         setWeeksPlayed(weeksPlayed);
       } catch (error) {
         console.error("Error loading league data:", error);
+        setError("error reading api endpoint");
       } finally {
         setLoading(false);
       }
@@ -69,6 +70,9 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
   const weekData = awardData.find((w) => w.week === selectedWeek);
   if (loading) {
     return <div>Loading awards...</div>;
+  }
+  if (error) {
+    return <div>Error reading ESPN API</div>;
   }
   return (
     <div className="flex justify-center items-center gap-6 flex-wrap">
