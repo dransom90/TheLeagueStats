@@ -25,12 +25,12 @@ function App() {
           The League's Stats Calculator
         </h1>
       </header>
-      <main className="p-6 max-w-4xl mx-auto relative z-0 !overflow-visible">
+      <main className="p-6 w-full z-0 !overflow-visible">
         <Tabs
           defaultValue="Welcome"
           className="mb-4 bg-[#386641] rounded-lg shadow p-2"
         >
-          <TabsList className="flex flex-wrap gap-2 justify-center space-x-4 mx-auto z-10 mb-10">
+          <TabsList className="flex flex-wrap justify-center gap-2 mx-auto mb-6">
             <TabsTrigger className="flex-none" value="Welcome">
               Welcome
             </TabsTrigger>
@@ -53,7 +53,7 @@ function App() {
               Team Performance
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="Welcome" className="flex justify-center mx-auto">
+          <TabsContent value="Welcome" className="flex justify-center mt-20">
             <div className="text-center flex justify-center items-center flex-col space-y-4">
               <Card className="bg-[#386641] p-6">
                 <h1 className="text-3xl font-bold mb-4 text-yellow-500">
@@ -101,22 +101,37 @@ function App() {
               />
             </div>
           </TabsContent>
-          <TabsContent value="Optimal Lineup">
+          <TabsContent
+            value="Optimal Lineup"
+            className="flex justify-center mt-4"
+          >
             <TeamLineupViewer year={selectedYear} />
           </TabsContent>
-          <TabsContent value="Luck">
+          <TabsContent value="Luck" className=" mt-20">
             <Luck selectedYear={selectedYear} />
           </TabsContent>
-          <TabsContent value="Weekly Awards">
+          <TabsContent
+            value="Weekly Awards"
+            className="flex justify-center mt-20"
+          >
             <WeeklyAwards selectedYear={selectedYear} />
           </TabsContent>
-          <TabsContent value="Coach Rating">
+          <TabsContent
+            value="Coach Rating"
+            className="flex justify-center mt-4"
+          >
             <UnderConstruction />
           </TabsContent>
-          <TabsContent value="Power Rating">
+          <TabsContent
+            value="Power Rating"
+            className="flex justify-center mt-4"
+          >
             <UnderConstruction />
           </TabsContent>
-          <TabsContent value="Team Performance">
+          <TabsContent
+            value="Team Performance"
+            className="flex justify-center mt-4"
+          >
             <UnderConstruction />
           </TabsContent>
         </Tabs>

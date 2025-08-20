@@ -75,7 +75,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
     return <div>Error reading ESPN API</div>;
   }
   return (
-    <div className="flex justify-center items-center gap-6 flex-wrap">
+    <div>
       <Accordion type="single" collapsible>
         <AccordionItem value="weekly-awards-intro">
           <AccordionTrigger className="text-lg font-bold">
