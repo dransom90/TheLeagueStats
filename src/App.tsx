@@ -118,19 +118,19 @@ function App() {
           </TabsContent>
           <TabsContent
             value="Coach Rating"
-            className="flex justify-center mt-4"
+            className="flex justify-center mt-20"
           >
             <UnderConstruction />
           </TabsContent>
           <TabsContent
             value="Power Rating"
-            className="flex justify-center mt-4"
+            className="flex justify-center mt-20"
           >
             <UnderConstruction />
           </TabsContent>
           <TabsContent
             value="Team Performance"
-            className="flex justify-center mt-4"
+            className="flex justify-center mt-20"
           >
             <UnderConstruction />
           </TabsContent>
