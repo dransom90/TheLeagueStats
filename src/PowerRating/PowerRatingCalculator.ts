@@ -55,31 +55,14 @@ export function calculatePowerRatings(leagueData: LeagueData): TeamPowerRating[]
 
     leagueData.teams.forEach((team: Team) => {
 
-        console.log("Calculating power rating for ", team.name);
-
         const wins = team.record.overall.wins;
-        console.log("wins: ", wins);
-
         const losses = team.record.overall.losses;
-        console.log("losses: ", losses);
-
         const pointsFor = team.record.overall.pointsFor;
-        console.log("points for: ", pointsFor);
-
         const percentage = team.record.overall.percentage;
-        console.log("percentage: ", percentage);
-
         const high = highLows[team.id].high;
-        console.log("high score: ", high);
-
         const low = highLows[team.id].low;
-        console.log("low score: ", low);
-
         const average = pointsFor / (wins + losses);
-        console.log("average score: ", average);
-
         const powerRating = (average * .6) + ((high + low) * .2) + ((percentage * 400) / 10);
-
         powerRatings.push({teamName: team.name, powerRating: powerRating});
     });
 
