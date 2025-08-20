@@ -1,15 +1,21 @@
-import { Card, CardHeader, CardTitle, CardContent } from "../@/components/ui/card"
-import { AlertTriangle } from "lucide-react"
-import { motion } from "framer-motion"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "../@/components/ui/card";
+import { AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function UnderConstructionTab() {
   return (
-    <div className="relative flex justify-center items-center py-12">
+    <div className="relative flex justify-center items-center py-12 mt-10">
       {/* Animated glow background */}
       <motion.div
         className="absolute rounded-2xl blur-3xl"
         style={{
-          background: "radial-gradient(circle, rgba(251,191,36,0.35) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(251,191,36,0.35) 0%, transparent 70%)",
           width: "400px",
           height: "400px",
         }}
@@ -43,8 +49,8 @@ export default function UnderConstructionTab() {
             transition={{ delay: 0.6, duration: 0.6 }}
             className="text-lg text-gray-700 dark:text-gray-300"
           >
-            The stats for this section are still cooking.  
-            When it’s ready, you’ll have another way to trash talk your league mates.
+            The stats for this section are still cooking. When it’s ready,
+            you’ll have another way to trash talk your league mates.
           </motion.p>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -57,5 +63,5 @@ export default function UnderConstructionTab() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
