@@ -1,4 +1,4 @@
-import type { LeagueData, Team } from "../lib/LeagueDataTypes";
+import type { LeagueData, Schedule, Team } from "../lib/LeagueDataTypes";
 import type { TeamPowerRating } from "./PowerRatingTypes";
 
 // Get high and low scores for each team in a season
