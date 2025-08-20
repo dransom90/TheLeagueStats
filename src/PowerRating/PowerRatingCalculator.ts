@@ -1,19 +1,3 @@
-/*
-Power Ratings ⚡
-
-Think of this as your team’s true power level — not just how many cheap wins you’ve scraped together. The formula blends:
-
-Average Score (60%) – your steady output.
-
-Highs + Lows (20%) – those monster weeks… and the stinkers.
-
-Win Percentage (20%) – because at some point, actually winning matters.
-
-The result: a number that tells us what your squad is really capable of dropping on any given weekend. It rewards consistency, exposes flukes, and keeps “lucky” teams in check.
-
-⚠️ Heads up: Don’t start flexing your Power Rating until at least 3 weeks in — before that, it’s basically astrology.
-*/
-
 import type { LeagueData, Team } from "../lib/LeagueDataTypes";
 import type { TeamPowerRating } from "./PowerRatingTypes";
 
