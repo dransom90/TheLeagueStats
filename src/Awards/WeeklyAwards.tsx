@@ -252,7 +252,9 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">Scored {team.value} points</span>
+                    <span className="block">
+                      Left {team.value} points on the bench
+                    </span>
                   </div>
                 ))}
               </div>
@@ -276,7 +278,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">Scored {team.value} points</span>
+                    <span className="block">Won by: {team.value} points</span>
                   </div>
                 ))}
               </div>
@@ -299,7 +301,7 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">Scored {team.value} points</span>
+                    <span className="block">Won by: {team.value} points</span>
                   </div>
                 ))}
               </div>
@@ -323,7 +325,9 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">Scored {team.value} points</span>
+                    <span className="block">
+                      Potential: {team.value} points
+                    </span>
                   </div>
                 ))}
               </div>
@@ -346,7 +350,9 @@ export default function WeeklyAwards({ selectedYear }: AwardProps) {
                     <span className="font-medium text-lg block">
                       {team.teamName}
                     </span>
-                    <span className="block">Scored {team.value} points</span>
+                    <span className="block">
+                      Potential: {team.value} points
+                    </span>
                   </div>
                 ))}
               </div>
