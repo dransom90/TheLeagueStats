@@ -1,7 +1,7 @@
-import type { Entry, LeagueData, Player } from "../lib/LeagueDataTypes";
+import type { Entry, LeagueData, Player, Team } from "../lib/LeagueDataTypes";
 import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
 import { getTruePosition, getWeeksPlayed, getWeekTotal } from "../lib/utils";
-import type { TeamPossiblePoints } from "./CoachRatingTypes";
+import type { TeamCoachRatings, TeamPossiblePoints } from "./CoachRatingTypes";
 
 export function getTotalPossiblePoints(leagueData: LeagueData): TeamPossiblePoints[]{
     const weeks = getWeeksPlayed(leagueData);
@@ -34,4 +34,19 @@ export function getTotalPossiblePoints(leagueData: LeagueData): TeamPossiblePoin
     }
 
     return teamPoints;
+}
+
+export function getCoachRatings(leagueData: LeagueData): TeamCoachRatings[]{
+    const optimalPoints = getTotalPossiblePoints(leagueData);
+    const teamRatings: TeamCoachRatings[] = [];
+
+    optimalPoints.forEach(x => {
+        const team: Team | undefined = leagueData.teams.find(t => t.name === x.teamName);
+        const winPercentage = team?.record.overall.percentage;
+        const pointsFor = team?.record.overall.pointsFor;
+        const coachRating = (winPercentage ?? 0 + (pointsFor ?? 0 / x.points)) / 2;
+        teamRatings.push({teamName: x.teamName, rating: coachRating});
+    });
+
+    return teamRatings;
 }
