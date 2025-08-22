@@ -3,48 +3,56 @@ import { getOptimalLineup } from "../lib/OptimalLineupCalculator";
 import { getTruePosition, getWeeksPlayed, getWeekTotal } from "../lib/utils";
 import type { TeamCoachRatings, TeamPossiblePoints } from "./CoachRatingTypes";
 
-export function getTotalPossiblePoints(leagueData: LeagueData): TeamPossiblePoints[]{
+export async function getTotalPossiblePoints(leagueData: LeagueData, selectedYear: number): Promise<TeamPossiblePoints[]>{
     const weeks = getWeeksPlayed(leagueData);
-    const teams = leagueData.teams;
-
     const teamPoints: TeamPossiblePoints[] = [];
     
     for (let i = 1; i <= weeks; i++){
-        teams.forEach(t => {
-            const rosterEntries = t?.roster?.entries ?? [];
-                const players: Player[] = (rosterEntries as Entry[]).map((entry) => {
-                  const player = entry.playerPoolEntry.player;
-                  const truePosition = getTruePosition(player);
-                  player.defaultPositionId = truePosition;
-                  return player;
-                });
-            
-                const lineup = getOptimalLineup(players, i);
-                const optimalPoints = getWeekTotal(lineup, i);
+        const res = await fetch(
+          `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${selectedYear}/segments/0/leagues/1525510?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId=${i} `
+        );
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
 
-                const existing = teamPoints.find(x => x.teamName === t.name);
-                if (existing) {
-                    // ✅ update points
-                    existing.points += optimalPoints;
-                } else {
-                    // ✅ insert new team
-                    teamPoints.push({teamName: t.name, points: optimalPoints});
-                }
+        const leagueData: LeagueData = await res.json();
+        const teams = leagueData.teams;
+        teams.forEach(t => {
+            
+            const rosterEntries = t.roster.entries ?? [];
+
+            const players: Player[] = rosterEntries.map((entry: Entry) => {
+            const player = entry.playerPoolEntry.player; 
+            player.defaultPositionId = getTruePosition(player);
+            return player;
+            });
+            
+            const lineup = getOptimalLineup(players, i);
+            const optimalPoints = getWeekTotal(lineup, i);
+            const existing = teamPoints.find(x => x.teamName === t.name);
+            if (existing) {
+                // ✅ update points
+                existing.points += optimalPoints;
+            } else {
+                // ✅ insert new team
+                teamPoints.push({teamName: t.name, points: optimalPoints});
+            }
         });
-    }
+    } 
 
     return teamPoints;
 }
 
-export function getCoachRatings(leagueData: LeagueData): TeamCoachRatings[]{
-    const optimalPoints = getTotalPossiblePoints(leagueData);
+export async function getCoachRatings(leagueData: LeagueData, selectedYear: number): Promise<TeamCoachRatings[]>{
+    const optimalPoints = getTotalPossiblePoints(leagueData, selectedYear);
     const teamRatings: TeamCoachRatings[] = [];
 
-    optimalPoints.forEach(x => {
+    (await optimalPoints).forEach(x => {
         const team: Team | undefined = leagueData.teams.find(t => t.name === x.teamName);
         const winPercentage = team?.record.overall.percentage;
         const pointsFor = team?.record.overall.pointsFor;
-        const coachRating = (winPercentage ?? 0 + (pointsFor ?? 0 / x.points)) / 2;
+        const pointsPercentage = (pointsFor ?? 0) / x.points;
+        const coachRating = ((winPercentage ?? 0) + pointsPercentage) / 2;
         teamRatings.push({teamName: x.teamName, rating: coachRating});
     });
 

@@ -20,7 +20,7 @@ export default function CoachRating({ selectedYear }: CoachRatingProps) {
         setError(null);
 
         const res = await fetch(
-          `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${selectedYear}/segments/0/leagues/1525510?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId`
+          `https://lm-api-reads.fantasy.espn.com/apis/v3/games/ffl/seasons/${selectedYear}/segments/0/leagues/1525510?view=mMatchup&view=mMatchupScore&view=mTeam&scoringPeriodId=1 `
         );
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -32,8 +32,8 @@ export default function CoachRating({ selectedYear }: CoachRatingProps) {
           throw new Error("Missing data found in API response");
         }
 
-        const ratings = getCoachRatings(leagueData);
-        setRatings(ratings);
+        const ratings = getCoachRatings(leagueData, selectedYear);
+        setRatings(await ratings);
       } catch (err: any) {
         setError(err.message || "Failed to fetch league data");
       } finally {

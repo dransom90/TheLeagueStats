@@ -17,7 +17,7 @@ export const CoachRatingsTable: React.FC<CoachRatingsTableProps> = ({
               Team
             </th>
             <th className="px-4 py-2 text-right text-sm font-semibold text-slate-100">
-              Power Rating ⚡
+              Coach Rating
             </th>
           </tr>
         </thead>
