@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function Loading() {
   return (
     <div className="flex flex-col items-center justify-center py-10 space-y-4">
