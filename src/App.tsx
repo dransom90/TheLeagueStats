@@ -15,6 +15,7 @@ import UnderConstruction from "./UnderConstruction";
 import WeeklyAwards from "./Awards/WeeklyAwards";
 import PowerRatings from "./PowerRating/PowerRatings";
 import CoachRating from "./CoachRating/CoachRating";
+import TeamPerformance from "./TeamPerformance/TeamPerformance";
 
 function App() {
   const currentYear = new Date().getFullYear();
@@ -134,7 +135,7 @@ function App() {
             value="Team Performance"
             className="flex justify-center mt-20"
           >
-            <UnderConstruction />
+            <TeamPerformance selectedYear={selectedYear} />
           </TabsContent>
         </Tabs>
       </main>
