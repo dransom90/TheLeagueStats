@@ -3,6 +3,7 @@ import type { LeagueData } from "../lib/LeagueDataTypes";
 import { getCoachRatings } from "./CoachRatingUtils";
 import type { TeamCoachRatings } from "./CoachRatingTypes";
 import { CoachRatingsTable } from "./CoachRatingTable";
+import Loading from "../Loading";
 
 interface CoachRatingProps {
   selectedYear: number;
@@ -45,7 +46,7 @@ export default function CoachRating({ selectedYear }: CoachRatingProps) {
   }, [selectedYear]);
 
   if (loading) {
-    return <div>Loading power ratings...</div>;
+    return <Loading />;
   }
 
   if (error) {

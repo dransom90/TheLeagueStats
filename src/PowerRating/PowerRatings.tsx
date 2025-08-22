@@ -3,6 +3,7 @@ import type { LeagueData } from "../lib/LeagueDataTypes";
 import type { TeamPowerRating } from "./PowerRatingTypes";
 import { calculatePowerRatings } from "./PowerRatingCalculator";
 import { PowerRatingsTable } from "./PowerRatingsTable";
+import Loading from "../Loading";
 
 interface PowerRatingProps {
   selectedYear: number;
@@ -45,7 +46,7 @@ export default function PowerRatings({ selectedYear }: PowerRatingProps) {
   }, [selectedYear]);
 
   if (loading) {
-    return <div>Loading power ratings...</div>;
+    return <Loading />;
   }
 
   if (error) {
