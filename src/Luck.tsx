@@ -31,6 +31,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../@/components/ui/tabs";
+import Loading from "./Loading";
 
 interface LuckProps {
   selectedYear: number;
@@ -77,7 +78,7 @@ export default function Luck({ selectedYear }: LuckProps) {
   }, [selectedYear]);
 
   if (loading) {
-    return <div>Loading matchups...</div>;
+    return <Loading />;
   }
 
   if (error) {

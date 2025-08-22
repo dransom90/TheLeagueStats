@@ -14,6 +14,7 @@ import { Card } from "../@/components/ui/card";
 import UnderConstruction from "./UnderConstruction";
 import WeeklyAwards from "./Awards/WeeklyAwards";
 import PowerRatings from "./PowerRating/PowerRatings";
+import CoachRating from "./CoachRating/CoachRating";
 
 function App() {
   const currentYear = new Date().getFullYear();
@@ -121,7 +122,7 @@ function App() {
             value="Coach Rating"
             className="flex justify-center mt-20"
           >
-            <UnderConstruction />
+            <CoachRating selectedYear={selectedYear} />
           </TabsContent>
           <TabsContent
             value="Power Rating"
