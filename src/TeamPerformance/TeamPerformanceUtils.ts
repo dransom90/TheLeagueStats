@@ -80,12 +80,33 @@ function getActualWins(leagueData: LeagueData, data: TeamPerformanceResult[]){
     }
 }
 
+function getExpectedRank(data: TeamPerformanceResult[]){
+    const sorted = [...data].sort((a,b) => b.expectedWins - a.expectedWins);
+    for(let i=0; i<sorted.length; i++){
+        const team = sorted[i];
+        const existing = data.find(x => x.teamName === team.teamName);
+        if(existing){
+            existing.expectedRank = i+1;
+        }
+    }
+}
+
+function getActualRank(leagueData: LeagueData, data: TeamPerformanceResult[]){
+  const teams = leagueData.teams;
+  for(const x of data){
+        const team = teams.find(t => t.name === x.teamName);
+        if(team){
+            x.actualRank = team.rankCalculatedFinal;
+        }
+    }
+}
+
 export default function getTeamPerformanceData(leagueData: LeagueData): TeamPerformanceResult[]{
     const performanceData: TeamPerformanceResult[] = [];
     getExpectedWins(leagueData, performanceData);
     getActualWins(leagueData, performanceData);
-    //getExpectedRank(leagueData, performanceData);
-    //getActualRank(leagueData, performanceData);
+    getExpectedRank(performanceData);
+    getActualRank(leagueData, performanceData);
 
     return performanceData;
 }

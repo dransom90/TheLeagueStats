@@ -108,9 +108,9 @@ export default function TeamPerformance({
         <p className="text-sm leading-relaxed">
           The result is a ranking system that shows whether a team’s record
           matches their true performance.
-          <span className="font-semibold">Lucky teams</span> with easy schedules
-          get exposed, while consistently high-scoring teams get the credit they
-          deserve.
+          <span className="font-semibold"> Lucky teams</span> with easy
+          schedules get exposed, while consistently high-scoring teams get the
+          credit they deserve.
         </p>
         <p className="text-sm leading-relaxed">
           You’ll also find a chart tracking{" "}
