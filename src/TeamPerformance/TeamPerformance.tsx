@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import type { LeagueData } from "../lib/LeagueDataTypes";
 import Loading from "../Loading";
+import getTeamPerformanceData from "./TeamPerformanceUtils";
+import type { TeamPerformanceResult } from "./TeamPerformanceTypes";
+import { TeamPerformanceTable } from "./TeamPerformanceTable";
 
 interface TeamPerformanceProps {
   selectedYear: number;
@@ -11,6 +14,7 @@ export default function TeamPerformance({
 }: TeamPerformanceProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<TeamPerformanceResult[]>([]);
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -30,6 +34,9 @@ export default function TeamPerformance({
         if (!leagueData.schedule || !leagueData.teams) {
           throw new Error("Missing data found in API response");
         }
+
+        const data = getTeamPerformanceData(leagueData);
+        setData(data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch league data");
       } finally {
@@ -113,6 +120,7 @@ export default function TeamPerformance({
           , so you can see the story of their season unfold.
         </p>
       </div>
+      <TeamPerformanceTable ratings={data} />
     </div>
   );
 }

@@ -5,7 +5,7 @@ interface TeamPerformanceTableProps {
   ratings: TeamPerformanceResult[];
 }
 
-export const PowerRatingsTable: React.FC<TeamPerformanceTableProps> = ({
+export const TeamPerformanceTable: React.FC<TeamPerformanceTableProps> = ({
   ratings,
 }) => {
   return (
