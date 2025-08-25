@@ -40,13 +40,13 @@ export const TeamPerformanceTable: React.FC<TeamPerformanceTableProps> = ({
                 {rating.expectedWins.toFixed(2)}
               </td>
               <td className="px-4 py-3 text-sm text-right font-mono font-bold text-emerald-300">
-                {rating.actualWins.toFixed(2)}
+                {rating.actualWins}
               </td>
               <td className="px-4 py-3 text-sm text-right font-mono font-bold text-emerald-300">
-                {rating.expectedRank.toFixed(2)}
+                {rating.expectedRank}
               </td>
               <td className="px-4 py-3 text-sm text-right font-mono font-bold text-emerald-300">
-                {rating.actualRank.toFixed(2)}
+                {rating.actualRank}
               </td>
             </tr>
           ))}

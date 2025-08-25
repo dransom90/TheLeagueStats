@@ -4,6 +4,7 @@ import Loading from "../Loading";
 import getTeamPerformanceData from "./TeamPerformanceUtils";
 import type { TeamPerformanceResult } from "./TeamPerformanceTypes";
 import { TeamPerformanceTable } from "./TeamPerformanceTable";
+import TeamPerformanceChart from "./TeamPerformanceChart";
 
 interface TeamPerformanceProps {
   selectedYear: number;
@@ -121,6 +122,20 @@ export default function TeamPerformance({
         </p>
       </div>
       <TeamPerformanceTable ratings={data} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+        {data.map((team) => (
+          <div
+            key={team.teamName}
+            className="p-4 bg-white rounded-2xl shadow-md"
+          >
+            <TeamPerformanceChart
+              teamName={team.teamName ?? "undefined"}
+              weeklyPoints={team.weeklyPoints}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

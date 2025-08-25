@@ -3,5 +3,6 @@ export interface TeamPerformanceResult{
     expectedWins: number,
     actualWins: number,
     expectedRank: number,
-    actualRank: number
+    actualRank: number,
+    weeklyPoints: number[]
 }

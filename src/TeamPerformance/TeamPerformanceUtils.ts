@@ -1,20 +1,22 @@
 import type { LeagueData } from "../lib/LeagueDataTypes";
 import type { TeamPerformanceResult } from "./TeamPerformanceTypes";
 
-function getExpectedWins(leagueData: LeagueData, data: TeamPerformanceResult[]){
-    const teams = leagueData.teams;
-    const teamIds = teams.map(team => team.id);
-    const numTeams = teams.length;
-    const schedules = leagueData.schedule;
+function getExpectedWins(
+  leagueData: LeagueData,
+  data: TeamPerformanceResult[]
+) {
+  const teams = leagueData.teams;
+  const numTeams = teams.length;
+  const schedules = leagueData.schedule;
 
-    const teamExpectedWins: Record<number, number> = {};
+  const teamExpectedWins: Record<number, number> = {};
+  const teamWeeklyPoints: Record<number, number[]> = {}; // ✅ hold weekly performance points
 
   // Group scores by week
   const weeks: Record<number, { teamId: number; points: number }[]> = {};
 
   for (const game of schedules) {
     const week = game.matchupPeriodId;
-
     if (!weeks[week]) weeks[week] = [];
 
     weeks[week].push({ teamId: game.home.teamId, points: game.home.totalPoints });
@@ -50,24 +52,40 @@ function getExpectedWins(leagueData: LeagueData, data: TeamPerformanceResult[]){
       const expectedWins = avgPoints / (numTeams - 1);
 
       for (const team of tieGroup) {
+        // ✅ update cumulative expected wins
         teamExpectedWins[team.teamId] =
           (teamExpectedWins[team.teamId] || 0) + expectedWins;
+
+        // ✅ store weekly points for charting
+        if (!teamWeeklyPoints[team.teamId]) {
+          teamWeeklyPoints[team.teamId] = [];
+        }
+        teamWeeklyPoints[team.teamId].push(avgPoints); 
       }
 
       rank = j; // move past this tie group
     }
   }
 
+  // Merge into data[]
   for (const teamId in teamExpectedWins) {
     const team = teams.find(t => t.id === Number(teamId));
     const existing = data.find((x) => x.teamName === team?.name);
-      if (existing) {
-        existing.expectedWins += teamExpectedWins[teamId];
-      } else {
-        data.push({ teamName: team?.name, expectedWins: teamExpectedWins[teamId], actualWins: 0, expectedRank: 0, actualRank: 0 });
-      }
-    
+
+    if (existing) {
+      existing.expectedWins += teamExpectedWins[teamId];
+      existing.weeklyPoints.push(...(teamWeeklyPoints[Number(teamId)] || []));
+    } else {
+      data.push({
+        teamName: team?.name || "",
+        expectedWins: teamExpectedWins[teamId],
+        actualWins: 0,
+        expectedRank: 0,
+        actualRank: 0,
+        weeklyPoints: teamWeeklyPoints[Number(teamId)] || []
+      });
     }
+  }
 }
 
 function getActualWins(leagueData: LeagueData, data: TeamPerformanceResult[]){
