@@ -11,7 +11,6 @@ import {
 
 import YearSelect from "./YearSelection";
 import { Card } from "../@/components/ui/card";
-import UnderConstruction from "./UnderConstruction";
 import WeeklyAwards from "./Awards/WeeklyAwards";
 import PowerRatings from "./PowerRating/PowerRatings";
 import CoachRating from "./CoachRating/CoachRating";
