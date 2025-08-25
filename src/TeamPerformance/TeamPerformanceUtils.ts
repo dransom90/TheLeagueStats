@@ -70,10 +70,20 @@ function getExpectedWins(leagueData: LeagueData, data: TeamPerformanceResult[]){
     }
 }
 
+function getActualWins(leagueData: LeagueData, data: TeamPerformanceResult[]){
+    const teams = leagueData.teams;
+    for(const x of data){
+        const team = teams.find(t => t.name === x.teamName);
+        if(team){
+            x.actualWins = team.record.overall.wins;
+        }
+    }
+}
+
 export default function getTeamPerformanceData(leagueData: LeagueData): TeamPerformanceResult[]{
     const performanceData: TeamPerformanceResult[] = [];
     getExpectedWins(leagueData, performanceData);
-    //getActualWins(leagueData, performanceData);
+    getActualWins(leagueData, performanceData);
     //getExpectedRank(leagueData, performanceData);
     //getActualRank(leagueData, performanceData);
 
