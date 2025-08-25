@@ -46,7 +46,17 @@ export default function CoachRating({ selectedYear }: CoachRatingProps) {
   }, [selectedYear]);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div>
+        <Loading />
+        <p className="text-[1.1rem] text-yellow-400 font-medium text-center">
+          Give me a minute... <br />
+          <span className="text-emerald-400">
+            I'm dealing with a lot of data.
+          </span>
+        </p>
+      </div>
+    );
   }
 
   if (error) {
