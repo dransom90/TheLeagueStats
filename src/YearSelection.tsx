@@ -16,7 +16,7 @@ interface YearSelectProps {
 export default function YearSelect({
   selectedYear,
   onYearChange,
-  years = [2025, 2024, 2023, 2022, 2021, 2020, 2019],
+  years = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019],
 }: YearSelectProps) {
   return (
     <div className="flex items-center space-x-2 mb-4">
