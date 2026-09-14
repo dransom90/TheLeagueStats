@@ -19,7 +19,7 @@ import TeamPerformance from "./TeamPerformance/TeamPerformance";
 function App() {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-  const years = [2025, 2024, 2023, 2022, 2021, 2020, 2019];
+  const years = [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019];
   return (
     <div className="min-h-screen bg-[#F2E8CF] text-gray-900">
       <header className="shadow p-4 bg-[#F2E8CF]">
